@@ -11,11 +11,22 @@ public class QuitScreen {
     }
 
     private void display() {
+        clearScreen();
         System.out.println("FATAL EXCEPTION");
         System.out.println("ACTIVITIES LOG:");
         for (LogEntry entry : operationLog) {
             System.out.println("     " + entry);
         }
         System.out.println("     System crashed, fatal exception!");
+    }
+
+    private void clearScreen() {
+        String clear = "";
+        for (int i = 0; i < 5; ++i) {
+            clear = clear + "\r\n";
+
+        }
+        System.out.println(clear);
+
     }
 }

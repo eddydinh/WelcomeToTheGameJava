@@ -6,7 +6,7 @@ public class DesktopScreen {
     }
 
     private void display() {
-
+        clearScreen();
         System.out.println("LOGGED INTO DESKTOP AS ADMIN");
         System.out.println("1.Back");
         System.out.println("2.Quit");
@@ -17,5 +17,15 @@ public class DesktopScreen {
         LogEntry logEntry = new LogEntry();
         logEntry.setValue("Logged into desktop as admin");
         return logEntry;
+    }
+
+    private void clearScreen() {
+        String clear = "";
+        for (int i = 0; i < 9; ++i) {
+            clear = clear + "\r\n";
+
+        }
+        System.out.println(clear);
+
     }
 }
