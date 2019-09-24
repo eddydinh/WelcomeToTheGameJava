@@ -218,6 +218,7 @@ class HackingGameTest {
 
         //-> Log In state
         assertTrue(game.isLogIn());
+        assertEquals(0,game.getPassword().length());
 
 
     }
