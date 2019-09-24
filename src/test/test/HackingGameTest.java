@@ -129,10 +129,17 @@ class HackingGameTest {
         assertEquals(0, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_BACK_SPACE);
         assertEquals(0, game.getPassword().length());
+        for (int i = 0; i < 15; i++){
+            game.keyPressed(KeyEvent.VK_A);
+        }
+        assertEquals(15, game.getPassword().length());
 
-        //Adding a character to password
+        //Adding a characters to password at maximum length
         game.keyPressed(KeyEvent.VK_J);
-        assertEquals(1, game.getPassword().length());
+        assertEquals(15, game.getPassword().length());
+        game.keyPressed(KeyEvent.VK_B);
+        assertEquals(15, game.getPassword().length());
+
 
         //set isGameOver and isGameLogIn to true
         game.setGameOver(true);
@@ -147,7 +154,7 @@ class HackingGameTest {
     }
 
     @Test
-    void testKeyPressedMainGame(){
+    void testKeyPressedMainGame() {
         game.gameIsPlayed();
 
         //make sure the game is in main screen stage (both isOver() and isLogIn() are false)
@@ -184,8 +191,9 @@ class HackingGameTest {
 
 
     }
+
     @Test
-    void testKeyPressedGameOver(){
+    void testKeyPressedGameOver() {
         game.gameIsOver();
 
         //make sure game is in game over state
@@ -218,7 +226,7 @@ class HackingGameTest {
 
         //-> Log In state
         assertTrue(game.isLogIn());
-        assertEquals(0,game.getPassword().length());
+        assertEquals(0, game.getPassword().length());
 
 
     }
