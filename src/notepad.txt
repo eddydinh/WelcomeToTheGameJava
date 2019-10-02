@@ -1,5 +1,2 @@
-Hello World!
-hello
-how are you
-c
-sfasf
+Welcome to the game!
+Here is where you store important information.

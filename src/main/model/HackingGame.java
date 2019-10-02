@@ -86,7 +86,7 @@ public class HackingGame {
         notePage.setCloseBtnY(notePage.getMainPageY() - 27);
     }
 
-    private Image getImage(String filePath) {
+    public Image getImage(String filePath) {
         try {
             File imageFile = new File(filePath);
             Image imageReturn = ImageIO.read(imageFile);

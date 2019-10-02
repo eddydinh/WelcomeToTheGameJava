@@ -4,20 +4,23 @@ import model.HackingGame;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import model.NotePage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 class HackingGameTest {
     private HackingGame game;
+    private Image notePadImg;
 
     @BeforeEach
     void runBefore() throws IOException {
         game = new HackingGame();
+
     }
 
     @Test
@@ -30,6 +33,12 @@ class HackingGameTest {
         assertTrue(game.isLogIn());
         assertEquals(game.DEFAULT_PASSWORD, game.getPassword());
 
+    }
+
+    @Test
+    void testGetImg() {
+        notePadImg = game.getImage("unknown");
+        assertEquals(null, notePadImg);
     }
 
     @Test
@@ -154,6 +163,46 @@ class HackingGameTest {
     @Test
     void testKeyPressedMainGame() throws FileNotFoundException {
         game.gameIsPlayed();
+        NotePage notePage = game.getNotePage();
+
+        //When input dialog box is active
+        notePage.setInputHasCursor(true);
+        notePage.setInputContent("");
+
+
+        game.keyPressed(KeyEvent.VK_ENTER);
+        game.keyPressed(KeyEvent.VK_BACK_SPACE);
+        assertEquals("", notePage.getInputContent());
+
+        game.keyPressed(KeyEvent.VK_SPACE);
+        assertEquals(" ", notePage.getInputContent());
+
+        game.keyPressed(KeyEvent.VK_A);
+        game.keyPressed(KeyEvent.VK_B);
+        assertEquals(" ab", notePage.getInputContent());
+
+        String str = " ab";
+        for (int i = 0; i < 47; i++) {
+            game.keyPressed(KeyEvent.VK_C);
+            str += "c";
+        }
+        assertEquals(str, notePage.getInputContent());
+
+        game.keyPressed(KeyEvent.VK_A);
+        game.keyPressed(KeyEvent.VK_SPACE);
+        assertEquals(str, notePage.getInputContent());
+
+        game.keyPressed(KeyEvent.VK_BACK_SPACE);
+        game.keyPressed(KeyEvent.VK_BACK_SPACE);
+        str = str.substring(0, str.length() - 2);
+        assertEquals(str, notePage.getInputContent());
+
+        game.keyPressed(KeyEvent.VK_ENTER);
+        assertEquals("", notePage.getInputContent());
+
+
+        //When input dialog box is not active
+        notePage.setInputHasCursor(false);
 
         //make sure the game is in main screen stage (both isOver() and isLogIn() are false)
         assertFalse(game.isOver());
@@ -191,7 +240,7 @@ class HackingGameTest {
     }
 
     @Test
-    void testKeyPressedGameOver() throws FileNotFoundException{
+    void testKeyPressedGameOver() throws FileNotFoundException {
         game.gameIsOver();
 
         //make sure game is in game over state
@@ -228,4 +277,6 @@ class HackingGameTest {
 
 
     }
+
+
 }
