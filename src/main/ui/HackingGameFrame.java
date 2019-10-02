@@ -1,13 +1,14 @@
 package ui;
 
-import javax.swing.JFrame;
-import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import model.HackingGame;
 
@@ -17,12 +18,13 @@ public class HackingGameFrame extends JFrame {
     private UiPanel uiPanel;
     private HackingGame theGame;
 
-    HackingGameFrame() {
+    HackingGameFrame() throws IOException {
         super("WELCOME TO THE GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
         theGame = new HackingGame();
         uiPanel = new UiPanel(theGame);
+        uiPanel.setLayout(null);
         add(uiPanel);
         addKeyListener(new KeyHandler());
         pack();
@@ -78,14 +80,18 @@ public class HackingGameFrame extends JFrame {
     private class KeyHandler extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            theGame.keyPressed(e.getKeyCode());
+            try {
+                theGame.keyPressed(e.getKeyCode());
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     /*
      * Play the game
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new HackingGameFrame();
     }
 }

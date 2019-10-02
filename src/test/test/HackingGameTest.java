@@ -8,12 +8,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 class HackingGameTest {
     private HackingGame game;
 
     @BeforeEach
-    void runBefore() {
+    void runBefore() throws IOException {
         game = new HackingGame();
     }
 
@@ -25,13 +28,13 @@ class HackingGameTest {
 
         assertFalse(game.isOver());
         assertTrue(game.isLogIn());
-        assertEquals("", game.getPassword());
+        assertEquals(game.DEFAULT_PASSWORD, game.getPassword());
 
     }
 
     @Test
     void testSetPassword() {
-        assertEquals("", game.getPassword());
+        assertEquals(game.DEFAULT_PASSWORD, game.getPassword());
 
         game.setPassword("test");
 
@@ -82,54 +85,49 @@ class HackingGameTest {
     }
 
     @Test
-    void testKeyPressedLogIn() {
+    void testKeyPressedLogIn() throws FileNotFoundException {
         //game is at log in state and password is an empty string
         assertTrue(game.isLogIn());
-        assertEquals(0, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length(), game.getPassword().length());
 
-        //Test for when user hits enter when password is empty
-        game.keyPressed(KeyEvent.VK_ENTER);
-        game.keyPressed(KeyEvent.VK_ENTER);
-        game.keyPressed(KeyEvent.VK_ENTER);
-        assertEquals(0, game.getPassword().length());
-
-        //Test for when user hits backspace when password is empty
-        game.keyPressed(KeyEvent.VK_BACK_SPACE);
-        game.keyPressed(KeyEvent.VK_BACK_SPACE);
-        game.keyPressed(KeyEvent.VK_BACK_SPACE);
-        assertEquals(0, game.getPassword().length());
 
         //Test for when user types anything other than backspace and enter -> add a character to password
         game.keyPressed(KeyEvent.VK_A);
-        assertEquals(1, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 1, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_ESCAPE);
-        assertEquals(2, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 2, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_KP_DOWN);
-        assertEquals(3, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 3, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_1);
-        assertEquals(4, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 4, game.getPassword().length());
 
 
         //Test when user hits backspace when password is not empty -> delete last character
         game.keyPressed(KeyEvent.VK_BACK_SPACE);
-        assertEquals(3, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 3, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_BACK_SPACE);
-        assertEquals(2, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 2, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_2);
-        assertEquals(3, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 3, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_BACK_SPACE);
-        assertEquals(2, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 2, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_BACK_SPACE);
-        assertEquals(1, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD.length() + 1, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_BACK_SPACE);
+
+        assertEquals(game.DEFAULT_PASSWORD.length(), game.getPassword().length());
+        for (int i = 0; i < game.DEFAULT_PASSWORD.length(); i++) {
+            game.keyPressed(KeyEvent.VK_BACK_SPACE);
+        }
         assertEquals(0, game.getPassword().length());
+
 
         //Test when user hits enter and backspace when password is empty
         game.keyPressed(KeyEvent.VK_ENTER);
         assertEquals(0, game.getPassword().length());
         game.keyPressed(KeyEvent.VK_BACK_SPACE);
         assertEquals(0, game.getPassword().length());
-        for (int i = 0; i < 15; i++){
+        for (int i = 0; i < 15; i++) {
             game.keyPressed(KeyEvent.VK_A);
         }
         assertEquals(15, game.getPassword().length());
@@ -154,7 +152,7 @@ class HackingGameTest {
     }
 
     @Test
-    void testKeyPressedMainGame() {
+    void testKeyPressedMainGame() throws FileNotFoundException {
         game.gameIsPlayed();
 
         //make sure the game is in main screen stage (both isOver() and isLogIn() are false)
@@ -193,7 +191,7 @@ class HackingGameTest {
     }
 
     @Test
-    void testKeyPressedGameOver() {
+    void testKeyPressedGameOver() throws FileNotFoundException{
         game.gameIsOver();
 
         //make sure game is in game over state
@@ -226,7 +224,7 @@ class HackingGameTest {
 
         //-> Log In state
         assertTrue(game.isLogIn());
-        assertEquals(0, game.getPassword().length());
+        assertEquals(game.DEFAULT_PASSWORD, game.getPassword());
 
 
     }
