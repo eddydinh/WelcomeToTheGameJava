@@ -1,7 +1,5 @@
 package model;
 
-import ui.UiPanel;
-
 import javax.imageio.ImageIO;
 import java.awt.event.KeyEvent;
 import java.awt.Image;
@@ -18,8 +16,8 @@ import java.util.List;
  * Represents a hacking game.
  */
 public class HackingGame {
-    public static final int WIDTH = 1000;
-    public static final int LENGTH = 800;
+    public static final int WIDTH = 1500;
+    public static final int LENGTH = 1000;
     public static final int MAX_PASSWORD_LENGTH = 15;
     public static final String DEFAULT_PASSWORD = "*******";
 
@@ -27,17 +25,29 @@ public class HackingGame {
     public List<String> lines;
 
 
-    public NotePad getNotePad() {
-        return notePad;
+    public NotePadIcon getNotePadIcon() {
+        return notePadIcon;
     }
 
-    private NotePad notePad;
+    private NotePadIcon notePadIcon;
 
-    public NotePage getNotePage() {
-        return notePage;
+    public NotePadPage getNotePadPage() {
+        return notePadPage;
     }
 
-    private NotePage notePage;
+    private NotePadPage notePadPage;
+
+    public BrowserIcon getBrowserIcon() {
+        return browserIcon;
+    }
+
+    private BrowserIcon browserIcon;
+
+    public BrowserPage getBrowserPage() {
+        return browserPage;
+    }
+
+    private BrowserPage browserPage;
 
 
     //Set isGameOver value
@@ -62,29 +72,14 @@ public class HackingGame {
         lines = Files.readAllLines(Paths.get("src/notepad.txt"));
         //set up notepad icon
         Image notePadImage = getImage("src/img/notePadIcon.png");
-        notePad = new NotePad(50, 50, 80, 90, notePadImage);
-        notePage = new NotePage(300, 200, 400, 500);
-        setUpNotePage();
-
+        Image browserImage = getImage("src/img/browserIcon.png");
+        notePadIcon = new NotePadIcon(50, 50, 80, 90, "Notes", notePadImage);
+        browserIcon = new BrowserIcon(50, 200, 80, 90, "A.N.N", browserImage);
+        notePadPage = new NotePadPage(50, 400, 400, 500, "Notes");
+        browserPage = new BrowserPage(475, 100, 1000, 900, "A.N.N");
 
     }
 
-    private void setUpNotePage() {
-        notePage.setNavBarX(notePage.getMainPageX());
-        notePage.setNavBarY(notePage.getMainPageY() - 30);
-        notePage.setNavBarWidth(notePage.getMainPageWidth());
-        notePage.setNavBarHeight(40);
-
-        notePage.setInputX(notePage.getMainPageX() + 1);
-        notePage.setInputY(notePage.getMainPageY() + notePage.getMainPageHeight() - 42);
-        notePage.setInputWidth(notePage.getMainPageWidth() - 2);
-        notePage.setInputHeight(40);
-
-        notePage.setCloseBtnHeight(30);
-        notePage.setCloseBtnWidth(30);
-        notePage.setCloseBtnX(notePage.getMainPageX() + notePage.getMainPageWidth() - 10 - notePage.getCloseBtnWidth());
-        notePage.setCloseBtnY(notePage.getMainPageY() - 27);
-    }
 
     public Image getImage(String filePath) {
         try {
@@ -146,7 +141,7 @@ public class HackingGame {
         } else if (isGameOver) {
             validateKeyGameOver(keyCode);
         } else {
-            if (!notePage.inputHasCursor()) {
+            if (!notePadPage.inputHasCursor()) {
                 if (keyCode == KeyEvent.VK_C) {
                     gameIsOver();
                 }
@@ -185,7 +180,7 @@ public class HackingGame {
     private void validateKeyGameOver(int keyCode) {
         if (keyCode == KeyEvent.VK_R) {
             setPassword(DEFAULT_PASSWORD);
-            notePage.setInputContent(notePage.DEFAULT_INPUT);
+            notePadPage.setInputContent(notePadPage.DEFAULT_INPUT);
             gameIsLogIn();
         }
 
@@ -196,21 +191,21 @@ public class HackingGame {
     //MODIFIES: this
     //EFFECTS: crash system into game over screen
     private void validateKeyGameIsPlayed(int keyCode) throws FileNotFoundException {
-        if (notePage.inputHasCursor()) {
-            if (keyCode == KeyEvent.VK_SPACE && notePage.getInputContent().length() < 50) {
-                notePage.setInputContent(notePage.getInputContent() + " ");
+        if (notePadPage.inputHasCursor()) {
+            if (keyCode == KeyEvent.VK_SPACE && notePadPage.getInputContent().length() < 50) {
+                notePadPage.setInputContent(notePadPage.getInputContent() + " ");
             } else if (((keyCode >= 48 && keyCode <= 90)
-                    || (keyCode >= 96 && keyCode <= 105)) && notePage.getInputContent().length() < 50) {
-                notePage.setInputContent(notePage.getInputContent() + KeyEvent.getKeyText(keyCode).toLowerCase());
+                    || (keyCode >= 96 && keyCode <= 105)) && notePadPage.getInputContent().length() < 50) {
+                notePadPage.setInputContent(notePadPage.getInputContent() + KeyEvent.getKeyText(keyCode).toLowerCase());
             }
-            if (notePage.getInputContent().length() > 0) {
+            if (notePadPage.getInputContent().length() > 0) {
                 if (keyCode == KeyEvent.VK_ENTER) {
-                    lines.add(notePage.getInputContent());
+                    lines.add(notePadPage.getInputContent());
                     writeToFile();
-                    notePage.setInputContent("");
+                    notePadPage.setInputContent("");
                 } else if (keyCode == KeyEvent.VK_BACK_SPACE) {
-                    notePage.setInputContent(notePage
-                            .getInputContent().substring(0, notePage.getInputContent().length() - 1));
+                    notePadPage.setInputContent(notePadPage
+                            .getInputContent().substring(0, notePadPage.getInputContent().length() - 1));
 
                 }
             }

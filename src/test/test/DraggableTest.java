@@ -1,54 +1,38 @@
 package test;
 
-import interfaces.Clickable;
 import interfaces.Draggable;
-import model.NotePad;
+import model.NotePadPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DraggableTest {
-    private Draggable notePad;
+    private Draggable notePage;
 
-    private Image getImage(String filePath) {
-        try {
-            File imageFile = new File(filePath);
-            Image imageReturn = ImageIO.read(imageFile);
-            return imageReturn;
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            return null;
-        }
-    }
 
     @BeforeEach
     void runBefore() {
-        Image notePadImage = getImage("src/img/notePadIcon.png");
-        notePad = new NotePad(50, 50, 80, 90, notePadImage);
+        notePage = new NotePadPage(300, 200, 400, 500, "Notes");
     }
 
     @Test
     void testDragHandler() {
 
-        assertEquals(50, notePad.getIconX());
-        assertEquals(50, notePad.getIconY());
+        assertEquals(300, notePage.getMainPageX());
+        assertEquals(200, notePage.getMainPageY());
 
-        notePad.dragHandler(20, 20);
+        notePage.dragHandler(20, 20);
 
-        assertEquals(20, notePad.getIconX());
-        assertEquals(20, notePad.getIconY());
+        assertEquals(20, notePage.getMainPageX());
+        assertEquals(20, notePage.getMainPageY());
 
 
-        notePad.dragHandler(30, 30);
+        notePage.dragHandler(30, 30);
 
-        assertEquals(30, notePad.getIconX());
-        assertEquals(30, notePad.getIconY());
+        assertEquals(30, notePage.getMainPageX());
+        assertEquals(30, notePage.getMainPageY());
 
 
     }

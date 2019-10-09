@@ -2,14 +2,12 @@ package ui;
 
 import interfaces.Clickable;
 import interfaces.Draggable;
-import model.HackingGame;
-import model.NotePad;
-import model.NotePage;
+import model.*;
 
+import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.*;
 import java.util.List;
 
 
@@ -32,18 +30,30 @@ public class UiPanel extends JPanel {
     private static final String GAME_OVER_MESSAGE_4 = "PRESS R TO REBOOT";
 
     private static final int NAV_BAR_LENGTH = 30;
-    private static final String NOTE_PAD = "NOTE_PAD";
-    private static final String NOTE_PAGE_CLOSE_BTN = "NOTE_PAGE_CLOSE_BTN";
-    private static final String NOTE_PAGE_INPUT = "NOTE_PAGE_INPUT";
+    private static final String ICON = "ICON";
+    private static final String PAGE_CLOSE_BTN = "PAGE_CLOSE_BTN";
+    private static final String PAGE_INPUT = "PAGE_INPUT";
+    private static final String PAGE_NAVBAR = "PAGE_NAVBAR";
 
 
     private HackingGame theGame;
     private boolean flash = false;
     private int centerY;
-    private Color inputTextColor = new Color(173, 173, 173);
+    private Color iconBgColor = new Color(204, 232, 255, 25);
+    private Icon currentIconClicked;
+    private Page currentInputPageClicked;
+    private Page currentPagePressed;
+    private NotePadIcon notePadIcon;
+    private BrowserIcon browserIcon;
+    private NotePadPage notePadPage;
+    private BrowserPage browserPage;
 
 
     public UiPanel(HackingGame theGame) {
+        notePadIcon = theGame.getNotePadIcon();
+        browserIcon = theGame.getBrowserIcon();
+        notePadPage = theGame.getNotePadPage();
+        browserPage = theGame.getBrowserPage();
         setPreferredSize(new Dimension(HackingGame.WIDTH, HackingGame.LENGTH));
         setBackground(Color.BLACK);
         this.theGame = theGame;
@@ -52,16 +62,20 @@ public class UiPanel extends JPanel {
 
             @Override
             public void mouseDragged(MouseEvent event) {
-                validateMouseDraggedNotePad(event);
+                validateMouseDraggedPage(event);
             }
 
             @Override
             public void mouseMoved(MouseEvent event) {
+
                 if (
-                        validateMouse(event, NOTE_PAD)
-                                || validateMouse(event, NOTE_PAGE_CLOSE_BTN)) {
+                        validateMouse(event, ICON, notePadIcon)
+                                || validateMouse(event, ICON, browserIcon)
+                                || validateMouse(event, PAGE_CLOSE_BTN, notePadPage)
+                                || validateMouse(event, PAGE_CLOSE_BTN, browserPage)) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
-                } else if (validateMouse(event, NOTE_PAGE_INPUT)) {
+                } else if (validateMouse(event, PAGE_INPUT, notePadPage)
+                        || validateMouse(event, PAGE_INPUT, browserPage)) {
                     setCursor(new Cursor(Cursor.TEXT_CURSOR));
                 } else {
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -75,36 +89,41 @@ public class UiPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
-                if (validateMouse(event, NOTE_PAD)) {
-                    onMousePressedNotePad();
+                if (validateMouse(event, PAGE_NAVBAR, notePadPage)) {
+                    onMousePressedPage(notePadPage);
+                } else if (validateMouse(event, PAGE_NAVBAR, browserPage)) {
+                    onMousePressedPage(browserPage);
                 }
 
             }
 
             @Override
             public void mouseReleased(MouseEvent event) {
-                NotePad notePad = theGame.getNotePad();
-                notePad.setPressed(false);
+                try {
+                    currentPagePressed.setPressed(false);
+                    currentPagePressed = null;
+                } catch (NullPointerException exception) {
+                    System.out.println(exception);
+                }
+
             }
 
             @Override
             public void mouseClicked(MouseEvent event) {
                 resetInput();
                 if (event.getClickCount() == 2) {
-                    if (validateMouse(event, NOTE_PAD)) {
-                        onMouseDoubleClickedNotePad();
-                    }
+                    validateMouseOnDoubleClicked(event);
                 } else if (event.getClickCount() == 1) {
-                    if (validateMouse(event, NOTE_PAD)) {
-                        onMouseClickedNotePad();
-                    } else if (validateMouse(event, NOTE_PAGE_CLOSE_BTN)) {
-                        onMouseClickedNotePageCloseBtn();
-                    } else if (validateMouse(event, NOTE_PAGE_INPUT)) {
-                        onMouseClickedNotePageInput();
-                    } else {
-                        Clickable notePad = theGame.getNotePad();
-                        notePad.clickHandler(false);
-
+                    if (validateMouse(event, ICON, notePadIcon)
+                            || validateMouse(event, ICON, browserIcon)) {
+                        onMouseClickedIcon();
+                    } else if (validateMouse(event, PAGE_CLOSE_BTN, notePadPage)) {
+                        onMouseClickedPageCloseBtn(notePadIcon);
+                    } else if (validateMouse(event, PAGE_CLOSE_BTN, browserPage)) {
+                        onMouseClickedPageCloseBtn(browserIcon);
+                    } else if (validateMouse(event, PAGE_INPUT, notePadPage)
+                            || validateMouse(event, PAGE_INPUT, browserPage)) {
+                        onMouseClickedPageInput();
                     }
 
                 }
@@ -114,73 +133,111 @@ public class UiPanel extends JPanel {
 
     }
 
+    private void validateMouseOnDoubleClicked(MouseEvent event) {
+        if (validateMouse(event, ICON, notePadIcon)
+                || validateMouse(event, ICON, browserIcon)) {
+            onMouseDoubleClickedIcon();
+        }
+    }
 
-    private boolean validateMouse(MouseEvent event, String type) {
-        NotePad notePad = theGame.getNotePad();
-        NotePage notePage = theGame.getNotePage();
+
+    private boolean validateMouse(MouseEvent event, String type, Icon icon) {
         Point point = event.getPoint();
         double mouseX = point.getX();
         double mouseY = point.getY();
-        if (type == NOTE_PAD && notePad.isMouseOver(mouseX, mouseY)) {
-            return true;
-        } else if (type == NOTE_PAGE_CLOSE_BTN && notePage.isMouseOverCloseBtn(mouseX, mouseY)) {
-            return true;
-        } else if (type == NOTE_PAGE_INPUT && notePage.isMouseOverInput(mouseX, mouseY)) {
+
+        if (type == ICON && icon.isMouseOver(mouseX, mouseY)) {
+            currentIconClicked = icon;
             return true;
         }
         return false;
     }
 
-    private void resetInput() {
-        NotePage notePage = theGame.getNotePage();
-        notePage.setInputContent(notePage.DEFAULT_INPUT);
-        inputTextColor = new Color(173, 173, 173);
-        notePage.setInputHasCursor(false);
-    }
-
-    private void validateMouseDraggedNotePad(MouseEvent event) {
-        Draggable notePad = theGame.getNotePad();
+    private boolean validateMouse(MouseEvent event, String type, Page page) {
         Point point = event.getPoint();
-        double mouseX = validateMouseX(point.getX());
-        double mouseY = validateMouseY(point.getY());
-        if (notePad.isPressed()) {
-            notePad.dragHandler(mouseX, mouseY);
+        double mouseX = point.getX();
+        double mouseY = point.getY();
+        if (type == PAGE_CLOSE_BTN && page.isMouseOverCloseBtn(mouseX, mouseY)) {
+            return true;
+        } else if (type == PAGE_INPUT && page.isMouseOverInput(mouseX, mouseY)) {
+            currentInputPageClicked = page;
+            return true;
+        } else if (type == PAGE_NAVBAR && page.isMouseOverNavBar(mouseX, mouseY)) {
+            currentPagePressed = page;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void resetInput() {
+        notePadPage.setInputContent(notePadPage.DEFAULT_INPUT);
+        browserPage.setInputContent(browserPage.DEFAULT_INPUT);
+        browserPage.setInputTextColor(new Color(173, 173, 173));
+        notePadPage.setInputTextColor(new Color(173, 173, 173));
+        notePadPage.setInputHasCursor(false);
+        browserPage.setInputHasCursor(false);
+        try {
+            currentIconClicked.clickHandler(false);
+        } catch (NullPointerException exception) {
+            System.out.println(exception);
+        }
+    }
+
+    private void validateMouseDraggedPage(MouseEvent event) {
+        try {
+            Draggable page = currentPagePressed;
+            Point point = event.getPoint();
+            double mouseX = validateMouseX(point.getX());
+            double mouseY = validateMouseY(point.getY());
+            page.dragHandler(mouseX, mouseY);
+            page.setUpPage();
+        } catch (NullPointerException exception) {
+            System.out.println(exception);
+        }
+
+    }
+
+    private void onMouseClickedPageInput() {
+        if (currentInputPageClicked == notePadPage) {
+            browserPage.setInputHasCursor(false);
+        } else {
+            notePadPage.setInputHasCursor(false);
+        }
+        if (!currentInputPageClicked.inputHasCursor()) {
+            currentInputPageClicked.setInputContent("");
+            currentInputPageClicked.setInputTextColor(new Color(0, 0, 0));
+            currentInputPageClicked.setInputHasCursor(true);
+        }
+
+    }
+
+    private void onMousePressedPage(Page page) {
+        page.setPressed(true);
+
+
+    }
+
+    private void onMouseClickedIcon() {
+        Clickable notePadIcon = this.notePadIcon;
+        Clickable browserIcon = this.browserIcon;
+        currentIconClicked.clickHandler(true);
+        if (notePadIcon == currentIconClicked) {
+            browserIcon.clickHandler(false);
+        } else {
+            notePadIcon.clickHandler(false);
         }
 
 
     }
 
-    private void onMouseClickedNotePageInput() {
-        NotePage notePage = theGame.getNotePage();
-        if (!notePage.inputHasCursor()) {
-            notePage.setInputContent("");
-            inputTextColor = new Color(0, 0, 0);
-            notePage.setInputHasCursor(true);
-        }
+    private void onMouseClickedPageCloseBtn(Icon icon) {
+
+        icon.doubleClickHandler(false);
     }
 
-    private void onMousePressedNotePad() {
-        NotePad notePad = theGame.getNotePad();
-        notePad.setPressed(true);
-
-
-    }
-
-    private void onMouseClickedNotePad() {
-        Clickable notePad = theGame.getNotePad();
-        notePad.clickHandler(true);
-
-
-    }
-
-    private void onMouseClickedNotePageCloseBtn() {
-        NotePad notePad = theGame.getNotePad();
-        notePad.doubleClickHandler(false);
-    }
-
-    private void onMouseDoubleClickedNotePad() {
-        Clickable notePad = theGame.getNotePad();
-        notePad.doubleClickHandler(true);
+    private void onMouseDoubleClickedIcon() {
+        currentIconClicked.doubleClickHandler(true);
 
 
     }
@@ -189,18 +246,19 @@ public class UiPanel extends JPanel {
     private double validateMouseX(double mouseX) {
         if (mouseX < 0) {
             return 0;
-        } else if (mouseX > theGame.WIDTH - 80) {
-            return theGame.WIDTH - 80;
+        } else if (mouseX > theGame.WIDTH - notePadPage.getNavBarWidth()) {
+            return theGame.WIDTH - notePadPage.getNavBarWidth();
         } else {
             return mouseX;
         }
     }
 
     private double validateMouseY(double mouseY) {
-        if (mouseY < NAV_BAR_LENGTH) {
-            return NAV_BAR_LENGTH;
-        } else if (mouseY > theGame.LENGTH - 130) {
-            return theGame.LENGTH - 130;
+        int offsetYLowerBound = 10;
+        if (mouseY < NAV_BAR_LENGTH + notePadPage.getNavBarHeight() - offsetYLowerBound) {
+            return NAV_BAR_LENGTH + notePadPage.getNavBarHeight() - offsetYLowerBound;
+        } else if (mouseY > theGame.LENGTH - notePadPage.getMainPageHeight()) {
+            return theGame.LENGTH - notePadPage.getMainPageHeight();
         } else {
             return mouseY;
         }
@@ -248,162 +306,179 @@ public class UiPanel extends JPanel {
     // MODIFIES: gameGraphics
     // EFFECTS:  draws the game onto gameGraphics
     private void displayGameScreen(Graphics gameGraphics) {
-        NotePad notePad = theGame.getNotePad();
         drawRect(gameGraphics, new Color(78, 78, 78), 0, 0, theGame.WIDTH, NAV_BAR_LENGTH);
         drawRect(gameGraphics, new Color(56, 91, 110), 0, 30, theGame.WIDTH, theGame.LENGTH);
-        drawNotePad(gameGraphics);
-        if (notePad.isDoubleClicked()) {
+        drawIcon(gameGraphics, notePadIcon);
+        drawIcon(gameGraphics, browserIcon);
+        if (notePadIcon.isDoubleClicked()) {
             drawNotePage(gameGraphics);
+        }
+        if (browserIcon.isDoubleClicked()) {
+            drawBrowserPage(gameGraphics);
         }
 
     }
 
+    private void drawBrowserPage(Graphics gameGraphics) {
+        drawMainPage(gameGraphics, browserPage);
+        drawNavBar(gameGraphics, browserPage);
+        drawCloseBtn(gameGraphics, browserPage);
+        drawInput(gameGraphics, browserPage);
+        drawInputContent(gameGraphics, browserPage);
+        drawMainPageWelcomeMessage(gameGraphics);
+    }
+
+    private void drawMainPageWelcomeMessage(Graphics gameGraphics) {
+        drawMessage("WELCOME TO THE DEEP WEB", gameGraphics,
+                50,
+                browserPage.getMainPageX() + 100,
+                browserPage.getMainPageY() + 100, Color.BLACK);
+    }
+
     private void drawNotePage(Graphics gameGraphics) {
-        drawMainNotePage(gameGraphics);
-        drawNavBar(gameGraphics);
-        drawCloseBtn(gameGraphics);
-        drawInput(gameGraphics);
-        drawInputContent(gameGraphics);
+        drawMainPage(gameGraphics, notePadPage);
+        drawNavBar(gameGraphics, notePadPage);
+        drawCloseBtn(gameGraphics, notePadPage);
+        drawInput(gameGraphics, notePadPage);
+        drawInputContent(gameGraphics, notePadPage);
 
     }
 
-    private void drawInputContent(Graphics gameGraphics) {
-        NotePage notePage = theGame.getNotePage();
+    private void drawInputContent(Graphics gameGraphics, Page page) {
 
-        int contentWidth = drawMessage(notePage.getInputContent(),
+        int contentWidth = drawMessage(page.getInputContent(),
                 gameGraphics,
                 12,
-                notePage.getInputX() + 10,
-                notePage.getInputY() + 20,
-                inputTextColor);
-        if (notePage.inputHasCursor()) {
+                page.getInputX() + 10,
+                page.getInputY() + 20,
+                page.getInputTextColor());
+        if (page.inputHasCursor()) {
 
             drawFlashingCursor(gameGraphics,
-                    notePage.getInputX() + 10,
-                    notePage.getInputY() + 35,
+                    page.getInputX() + 10,
+                    page.getInputY() + 35,
                     contentWidth,
                     new Color(0, 0, 0));
         }
 
     }
 
-    private void drawInput(Graphics gameGraphics) {
-        NotePage notePage = theGame.getNotePage();
+    private void drawInput(Graphics gameGraphics, Page page) {
         drawRect(gameGraphics,
                 new Color(0, 0, 0),
-                notePage.getInputX(),
-                notePage.getInputY(),
-                notePage.getInputWidth(),
-                notePage.getInputHeight());
+                page.getInputX(),
+                page.getInputY(),
+                page.getInputWidth(),
+                page.getInputHeight());
         drawRect(gameGraphics,
                 new Color(255, 255, 255),
-                notePage.getInputX() + 1,
-                notePage.getInputY() + 1,
-                notePage.getInputWidth() - 2,
-                notePage.getInputHeight() - 2);
+                page.getInputX() + 1,
+                page.getInputY() + 1,
+                page.getInputWidth() - 2,
+                page.getInputHeight() - 2);
 
     }
 
-    private void drawCloseBtn(Graphics gameGraphics) {
-        NotePage notePage = theGame.getNotePage();
+    private void drawCloseBtn(Graphics gameGraphics, Page page) {
         drawRect(gameGraphics,
                 new Color(163, 34, 39),
-                notePage.getCloseBtnX(),
-                notePage.getCloseBtnY(),
-                notePage.getCloseBtnWidth(),
-                notePage.getCloseBtnHeight());
+                page.getCloseBtnX(),
+                page.getCloseBtnY(),
+                page.getCloseBtnWidth(),
+                page.getCloseBtnHeight());
         drawMessage("X",
                 gameGraphics,
                 20,
-                notePage.getCloseBtnX() + 8,
-                notePage.getCloseBtnY() + 23,
+                page.getCloseBtnX() + 8,
+                page.getCloseBtnY() + 23,
                 new Color(255, 255, 255));
     }
 
-    private void drawNavBar(Graphics gameGraphics) {
-        NotePage notePage = theGame.getNotePage();
+    private void drawNavBar(Graphics gameGraphics, Page page) {
         drawRect(gameGraphics,
                 new Color(228, 227, 228),
-                notePage.getNavBarX(),
-                notePage.getNavBarY(),
-                notePage.getNavBarWidth(),
-                notePage.getNavBarHeight());
-        drawMessage("Notes",
+                page.getNavBarX(),
+                page.getNavBarY(),
+                page.getNavBarWidth(),
+                page.getNavBarHeight());
+        drawMessage(page.getPageName(),
                 gameGraphics,
                 20,
-                notePage.getNavBarX() + 10,
-                notePage.getNavBarY() + 25,
+                page.getNavBarX() + 10,
+                page.getNavBarY() + 25,
                 new Color(0, 0, 0));
     }
 
-    private void drawMainNotePage(Graphics gameGraphics) {
-        NotePage notePage = theGame.getNotePage();
+    private void drawMainPage(Graphics gameGraphics, Page page) {
         drawRect(gameGraphics,
                 new Color(255, 255, 255),
-                notePage.getMainPageX(),
-                notePage.getMainPageY(),
-                notePage.getMainPageWidth(),
-                notePage.getMainPageHeight());
-        drawNotes(gameGraphics);
+                page.getMainPageX(),
+                page.getMainPageY(),
+                page.getMainPageWidth(),
+                page.getMainPageHeight());
+        if (page == notePadPage) {
+            drawNotes(gameGraphics);
+        }
     }
+
 
     private void drawNotes(Graphics gameGraphics) {
         List<String> lines = theGame.lines;
-        NotePage notePage = theGame.getNotePage();
         int offsetY = 25;
         int lineHeight = 15;
         for (String line : lines) {
-            if (!(notePage.getMainPageY() + offsetY
-                    >= notePage.getMainPageY()
-                    + notePage.getMainPageHeight()
-                    - notePage.getInputHeight())) {
+            if (!(notePadPage.getMainPageY() + offsetY
+                    >= notePadPage.getMainPageY()
+                    + notePadPage.getMainPageHeight()
+                    - notePadPage.getInputHeight())) {
                 drawMessage(line,
                         gameGraphics,
                         12,
-                        notePage.getMainPageX() + 10,
-                        notePage.getMainPageY() + offsetY,
+                        notePadPage.getMainPageX() + 10,
+                        notePadPage.getMainPageY() + offsetY,
                         Color.BLACK);
                 offsetY += lineHeight;
             }
         }
     }
 
-    private void drawNotePad(Graphics gameGraphics) {
-        NotePad notePad = theGame.getNotePad();
-        if (notePad.isClicked()) {
-            drawNotePadIconWithBackground(gameGraphics);
+
+    private void drawIconWithBackground(Graphics gameGraphics, Icon icon) {
+
+        gameGraphics.drawImage(icon.getIconImg(),
+                icon.getIconX(),
+                icon.getIconY(),
+                icon.getIconWidth(),
+                icon.getIconHeight(), iconBgColor,
+                null);
+    }
+
+    private void drawIconWithoutBackground(Graphics gameGraphics, Icon icon) {
+        gameGraphics.drawImage(icon.getIconImg(),
+                icon.getIconX(),
+                icon.getIconY(),
+                icon.getIconWidth(),
+                icon.getIconHeight(),
+                null);
+    }
+
+
+    private void drawIcon(Graphics gameGraphics, Icon icon) {
+        if (icon.isClicked()) {
+            drawIconWithBackground(gameGraphics, icon);
         } else {
-            drawNotePadIconWithoutBackground(gameGraphics);
+            drawIconWithoutBackground(gameGraphics, icon);
         }
 
         drawMessage(
-                "Notepad",
+                icon.getIconName(),
                 gameGraphics,
                 15,
-                notePad.getIconX() + 15,
-                notePad.getIconY() + notePad.getIconHeight() + 20,
+                icon.getIconX() + 20,
+                icon.getIconY() + icon.getIconHeight() + 20,
                 new Color(255, 255, 255));
     }
 
-    private void drawNotePadIconWithBackground(Graphics gameGraphics) {
-        NotePad notePad = theGame.getNotePad();
-        gameGraphics.drawImage(notePad.getIconImg(),
-                notePad.getIconX(),
-                notePad.getIconY(),
-                notePad.getIconWidth(),
-                notePad.getIconHeight(), new Color(204, 232, 255, 25),
-                null);
-    }
-
-    private void drawNotePadIconWithoutBackground(Graphics gameGraphics) {
-        NotePad notePad = theGame.getNotePad();
-        gameGraphics.drawImage(notePad.getIconImg(),
-                notePad.getIconX(),
-                notePad.getIconY(),
-                notePad.getIconWidth(),
-                notePad.getIconHeight(),
-                null);
-    }
 
     //Draw rect component of main game screen
     //MODIFIES: gameGraphics

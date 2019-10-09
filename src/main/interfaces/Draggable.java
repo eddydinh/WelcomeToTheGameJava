@@ -1,13 +1,14 @@
 package interfaces;
 
-import java.awt.event.MouseListener;
 
 public interface Draggable {
-    public void dragHandler(double mouseX, double mouseY);
+    void dragHandler(double mouseX, double mouseY);
 
-    public boolean isPressed();
+    boolean isPressed();
 
-    int getIconX();
+    int getMainPageX();
 
-    int getIconY();
+    int getMainPageY();
+
+    void setUpPage();
 }

@@ -20,6 +20,7 @@ public class SaveLoadTest {
         theGame = new HackingGame();
     }
 
+    //Check content
     @Test
     void testReadWrite() throws IOException {
         //TestRead

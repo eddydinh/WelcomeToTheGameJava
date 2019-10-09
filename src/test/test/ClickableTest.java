@@ -1,7 +1,7 @@
 package test;
 
 import interfaces.Clickable;
-import model.NotePad;
+import model.NotePadIcon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +30,7 @@ public class ClickableTest {
     @BeforeEach
     void runBefore() {
         Image notePadImage = getImage("src/img/notePadIcon.png");
-        notePad = new NotePad(50, 50, 80, 90, notePadImage);
+        notePad = new NotePadIcon(50, 50, 80, 90, "Notes", notePadImage);
     }
 
     @Test

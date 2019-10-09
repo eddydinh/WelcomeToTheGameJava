@@ -1,9 +1,9 @@
 package interfaces;
 
 public interface Clickable {
-    public void clickHandler(boolean isClicked);
+    void clickHandler(boolean isClicked);
 
-    public void doubleClickHandler(boolean isDoubleClicked);
+    void doubleClickHandler(boolean isDoubleClicked);
 
     boolean isClicked();
 

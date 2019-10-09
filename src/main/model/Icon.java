@@ -1,32 +1,22 @@
 package model;
 
 import interfaces.Clickable;
-import interfaces.Draggable;
 
-import javax.swing.*;
-import java.awt.Image;
+import java.awt.*;
 
-public class NotePad implements Clickable, Draggable {
-
-
+public abstract class Icon implements Clickable {
     private Image iconImg;
     private int iconX;
     private int iconY;
     private int iconHeight;
     private int iconWidth;
 
-    private boolean isPressed = false;
+
+    private String iconName;
+
     private boolean isClicked = false;
     private boolean isDoubleClicked = false;
 
-    public NotePad(int iconX, int iconY, int iconWidth, int iconHeight, Image iconImg) {
-        setIconImg(iconImg);
-        setIconX(iconX);
-        setIconY(iconY);
-        setIconHeight(iconHeight);
-        setIconWidth(iconWidth);
-
-    }
 
     public Image getIconImg() {
         return iconImg;
@@ -68,14 +58,6 @@ public class NotePad implements Clickable, Draggable {
         this.iconWidth = iconWidth;
     }
 
-    public boolean isPressed() {
-        return isPressed;
-    }
-
-    public void setPressed(boolean pressed) {
-        isPressed = pressed;
-    }
-
     public boolean isClicked() {
         return isClicked;
     }
@@ -92,6 +74,35 @@ public class NotePad implements Clickable, Draggable {
         isDoubleClicked = doubleClicked;
     }
 
+
+    public String getIconName() {
+        return iconName;
+    }
+
+    public void setIconName(String iconName) {
+        this.iconName = iconName;
+    }
+
+    public Icon(int iconX, int iconY, int iconWidth, int iconHeight, String iconName, Image iconImg) {
+        setIconImg(iconImg);
+        setIconX(iconX);
+        setIconY(iconY);
+        setIconHeight(iconHeight);
+        setIconWidth(iconWidth);
+        setIconName(iconName);
+
+    }
+
+    @Override
+    public void clickHandler(boolean isClicked) {
+        setClicked(isClicked);
+    }
+
+    @Override
+    public void doubleClickHandler(boolean isDoubleClicked) {
+        setDoubleClicked(isDoubleClicked);
+    }
+
     public boolean isMouseOver(double mouseX, double mouseY) {
         if (mouseX > getIconX()
                 && mouseX < getIconX() + getIconWidth()
@@ -104,20 +115,5 @@ public class NotePad implements Clickable, Draggable {
 
     }
 
-    @Override
-    public void dragHandler(double iconX, double iconY) {
-        setIconX((int) iconX);
-        setIconY((int) iconY);
-    }
-
-    @Override
-    public void clickHandler(boolean isClicked) {
-        setClicked(isClicked);
-    }
-
-    @Override
-    public void doubleClickHandler(boolean isDoubleClicked) {
-        setDoubleClicked(isDoubleClicked);
-    }
 
 }

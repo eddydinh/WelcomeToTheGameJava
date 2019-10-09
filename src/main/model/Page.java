@@ -1,8 +1,10 @@
 package model;
 
-public class NotePage {
+import interfaces.Draggable;
 
-    public static final String DEFAULT_INPUT = "Enter note...";
+import java.awt.*;
+
+public abstract class Page implements Draggable {
 
     //Nav bar attributes
     private int navBarX;
@@ -31,15 +33,39 @@ public class NotePage {
     //Content of input
     private String inputContent;
 
+    public String getPageName() {
+        return pageName;
+    }
+
+    public void setPageName(String pageName) {
+        this.pageName = pageName;
+    }
+
+    private String pageName;
+
+    public Color getInputTextColor() {
+        return inputTextColor;
+    }
+
+    public void setInputTextColor(Color inputTextColor) {
+        this.inputTextColor = inputTextColor;
+    }
+
+    private Color inputTextColor;
 
     private boolean inputHasCursor = false;
+    private boolean isPressed = false;
 
-    public NotePage(int mainX, int mainY, int mainWidth, int mainHeight) {
+    private static final Color DEFAULT_INPUT_COLOR = new Color(173,173,173);
+
+    public Page(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
         setMainPageX(mainX);
         setMainPageY(mainY);
         setMainPageWidth(mainWidth);
+        setPageName(pageName);
         setMainPageHeight(mainHeight);
-        setInputContent(DEFAULT_INPUT);
+        setInputTextColor(DEFAULT_INPUT_COLOR);
+        setUpPage();
     }
 
     public int getNavBarX() {
@@ -178,6 +204,14 @@ public class NotePage {
         this.inputContent = inputContent;
     }
 
+    public boolean isPressed() {
+        return isPressed;
+    }
+
+    public void setPressed(boolean pressed) {
+        isPressed = pressed;
+    }
+
 
     public boolean inputHasCursor() {
         return inputHasCursor;
@@ -211,4 +245,23 @@ public class NotePage {
 
     }
 
+    public boolean isMouseOverNavBar(double mouseX, double mouseY) {
+        if (mouseX > getNavBarX()
+                && mouseX < getNavBarX() + getNavBarWidth() - getCloseBtnWidth()
+                && mouseY > getNavBarY()
+                && mouseY < getNavBarY() + getNavBarHeight()) {
+            return true;
+        }
+        return false;
+
+
+    }
+
+    @Override
+    public void dragHandler(double iconX, double iconY) {
+        setMainPageX((int) iconX);
+        setMainPageY((int) iconY);
+    }
+
+    public abstract void setUpPage();
 }
