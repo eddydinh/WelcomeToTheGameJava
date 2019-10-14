@@ -1,7 +1,5 @@
-package test;
+package model;
 
-import model.HackingGame;
-import model.NotePadIcon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +33,8 @@ public class NotePadIconTest {
 
         assertFalse(notePadIcon.isClicked());
         assertFalse(notePadIcon.isDoubleClicked());
+
+        assertEquals(game.DEFAULT_NOTES_NAME, notePadIcon.getIconName());
     }
 
     @Test

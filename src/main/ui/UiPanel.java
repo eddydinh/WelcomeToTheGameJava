@@ -1,13 +1,14 @@
 package ui;
 
 import interfaces.Clickable;
-import interfaces.Draggable;
 import model.*;
 
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.List;
 
 
@@ -40,9 +41,8 @@ public class UiPanel extends JPanel {
     private boolean flash = false;
     private int centerY;
     private Color iconBgColor = new Color(204, 232, 255, 25);
-    private Icon currentIconClicked;
-    private Page currentInputPageClicked;
-    private Page currentPagePressed;
+    private MouseMotionListener mlDrag;
+    private MouseListener mlPressed;
     private NotePadIcon notePadIcon;
     private BrowserIcon browserIcon;
     private NotePadPage notePadPage;
@@ -60,10 +60,6 @@ public class UiPanel extends JPanel {
         this.centerY = theGame.LENGTH / 2 - LOGIN_BOX_LENGTH / 2;
         addMouseMotionListener(new MouseAdapter() {
 
-            @Override
-            public void mouseDragged(MouseEvent event) {
-                validateMouseDraggedPage(event);
-            }
 
             @Override
             public void mouseMoved(MouseEvent event) {
@@ -90,6 +86,7 @@ public class UiPanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent event) {
                 if (validateMouse(event, PAGE_NAVBAR, notePadPage)) {
+
                     onMousePressedPage(notePadPage);
                 } else if (validateMouse(event, PAGE_NAVBAR, browserPage)) {
                     onMousePressedPage(browserPage);
@@ -97,16 +94,6 @@ public class UiPanel extends JPanel {
 
             }
 
-            @Override
-            public void mouseReleased(MouseEvent event) {
-                try {
-                    currentPagePressed.setPressed(false);
-                    currentPagePressed = null;
-                } catch (NullPointerException exception) {
-                    System.out.println(exception);
-                }
-
-            }
 
             @Override
             public void mouseClicked(MouseEvent event) {
@@ -114,16 +101,18 @@ public class UiPanel extends JPanel {
                 if (event.getClickCount() == 2) {
                     validateMouseOnDoubleClicked(event);
                 } else if (event.getClickCount() == 1) {
-                    if (validateMouse(event, ICON, notePadIcon)
-                            || validateMouse(event, ICON, browserIcon)) {
-                        onMouseClickedIcon();
+                    if (validateMouse(event, ICON, notePadIcon)) {
+                        onMouseClickedIcon(notePadIcon);
+                    } else if (validateMouse(event, ICON, browserIcon)) {
+                        onMouseClickedIcon(browserIcon);
                     } else if (validateMouse(event, PAGE_CLOSE_BTN, notePadPage)) {
                         onMouseClickedPageCloseBtn(notePadIcon);
                     } else if (validateMouse(event, PAGE_CLOSE_BTN, browserPage)) {
                         onMouseClickedPageCloseBtn(browserIcon);
-                    } else if (validateMouse(event, PAGE_INPUT, notePadPage)
-                            || validateMouse(event, PAGE_INPUT, browserPage)) {
-                        onMouseClickedPageInput();
+                    } else if (validateMouse(event, PAGE_INPUT, notePadPage)) {
+                        onMouseClickedPageInput(notePadPage);
+                    } else if (validateMouse(event, PAGE_INPUT, browserPage)) {
+                        onMouseClickedPageInput(browserPage);
                     }
 
                 }
@@ -134,9 +123,10 @@ public class UiPanel extends JPanel {
     }
 
     private void validateMouseOnDoubleClicked(MouseEvent event) {
-        if (validateMouse(event, ICON, notePadIcon)
-                || validateMouse(event, ICON, browserIcon)) {
-            onMouseDoubleClickedIcon();
+        if (validateMouse(event, ICON, notePadIcon)) {
+            onMouseDoubleClickedIcon(notePadIcon);
+        } else if (validateMouse(event, ICON, browserIcon)) {
+            onMouseDoubleClickedIcon(browserIcon);
         }
     }
 
@@ -147,7 +137,6 @@ public class UiPanel extends JPanel {
         double mouseY = point.getY();
 
         if (type == ICON && icon.isMouseOver(mouseX, mouseY)) {
-            currentIconClicked = icon;
             return true;
         }
         return false;
@@ -160,10 +149,9 @@ public class UiPanel extends JPanel {
         if (type == PAGE_CLOSE_BTN && page.isMouseOverCloseBtn(mouseX, mouseY)) {
             return true;
         } else if (type == PAGE_INPUT && page.isMouseOverInput(mouseX, mouseY)) {
-            currentInputPageClicked = page;
+
             return true;
         } else if (type == PAGE_NAVBAR && page.isMouseOverNavBar(mouseX, mouseY)) {
-            currentPagePressed = page;
             return true;
         }
 
@@ -171,43 +159,44 @@ public class UiPanel extends JPanel {
     }
 
     private void resetInput() {
+
         notePadPage.setInputContent(notePadPage.DEFAULT_INPUT);
         browserPage.setInputContent(browserPage.DEFAULT_INPUT);
+
         browserPage.setInputTextColor(new Color(173, 173, 173));
         notePadPage.setInputTextColor(new Color(173, 173, 173));
+
         notePadPage.setInputHasCursor(false);
         browserPage.setInputHasCursor(false);
-        try {
-            currentIconClicked.clickHandler(false);
-        } catch (NullPointerException exception) {
-            System.out.println(exception);
-        }
+
+        browserIcon.clickHandler(false);
+        notePadIcon.clickHandler(false);
+
     }
 
-    private void validateMouseDraggedPage(MouseEvent event) {
-        try {
-            Draggable page = currentPagePressed;
+    private void validateMouseDraggedPage(MouseEvent event, Page page) {
+
+        if (page.isPressed()) {
             Point point = event.getPoint();
             double mouseX = validateMouseX(point.getX());
             double mouseY = validateMouseY(point.getY());
             page.dragHandler(mouseX, mouseY);
             page.setUpPage();
-        } catch (NullPointerException exception) {
-            System.out.println(exception);
         }
+
 
     }
 
-    private void onMouseClickedPageInput() {
-        if (currentInputPageClicked == notePadPage) {
+    private void onMouseClickedPageInput(Page page) {
+        if (page == notePadPage) {
             browserPage.setInputHasCursor(false);
         } else {
             notePadPage.setInputHasCursor(false);
         }
-        if (!currentInputPageClicked.inputHasCursor()) {
-            currentInputPageClicked.setInputContent("");
-            currentInputPageClicked.setInputTextColor(new Color(0, 0, 0));
-            currentInputPageClicked.setInputHasCursor(true);
+        if (!page.inputHasCursor()) {
+            page.setInputContent("");
+            page.setInputTextColor(new Color(0, 0, 0));
+            page.setInputHasCursor(true);
         }
 
     }
@@ -215,14 +204,37 @@ public class UiPanel extends JPanel {
     private void onMousePressedPage(Page page) {
         page.setPressed(true);
 
+        mlDrag = new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+
+                validateMouseDraggedPage(e, page);
+            }
+
+
+        };
+
+        mlPressed = new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent event) {
+
+                page.setPressed(false);
+                removeMouseMotionListener(mlDrag);
+                removeMouseListener(mlPressed);
+
+
+            }
+        };
+        addMouseMotionListener(mlDrag);
+        addMouseListener(mlPressed);
 
     }
 
-    private void onMouseClickedIcon() {
+    private void onMouseClickedIcon(Icon icon) {
         Clickable notePadIcon = this.notePadIcon;
         Clickable browserIcon = this.browserIcon;
-        currentIconClicked.clickHandler(true);
-        if (notePadIcon == currentIconClicked) {
+        icon.clickHandler(true);
+        if (notePadIcon == icon) {
             browserIcon.clickHandler(false);
         } else {
             notePadIcon.clickHandler(false);
@@ -236,8 +248,8 @@ public class UiPanel extends JPanel {
         icon.doubleClickHandler(false);
     }
 
-    private void onMouseDoubleClickedIcon() {
-        currentIconClicked.doubleClickHandler(true);
+    private void onMouseDoubleClickedIcon(Icon icon) {
+        icon.doubleClickHandler(true);
 
 
     }

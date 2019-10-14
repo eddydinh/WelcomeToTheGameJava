@@ -1,7 +1,5 @@
-package test;
+package model;
 
-import model.HackingGame;
-import model.NotePadPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +53,12 @@ public class NotePadPageTest {
         //inputHasCursor
         assertFalse(notePadPage.inputHasCursor());
 
+        //
+        assertEquals(game.DEFAULT_NOTES_NAME, notePadPage.getPageName());
+
+        //
+        assertEquals(notePadPage.DEFAULT_INPUT_COLOR, notePadPage.getInputTextColor());
+
     }
 
     @Test
@@ -84,6 +88,19 @@ public class NotePadPageTest {
         mouseY = 698;
 
         assertFalse(notePadPage.isMouseOverInput(mouseX, mouseY));
+    }
+
+    @Test
+    void testIsMouseOverNavBar() {
+        double mouseX = notePadPage.getNavBarX() + notePadPage.getNavBarWidth() - notePadPage.getCloseBtnWidth() - 10;
+        double mouseY = notePadPage.getNavBarY() + notePadPage.getNavBarHeight() - 10;
+
+        assertTrue(notePadPage.isMouseOverNavBar(mouseX, mouseY));
+
+        mouseX = 699;
+        mouseY = 698;
+
+        assertFalse(notePadPage.isMouseOverNavBar(mouseX, mouseY));
     }
 
     @Test

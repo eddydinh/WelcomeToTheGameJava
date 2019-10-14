@@ -1,7 +1,6 @@
-package test;
+package model;
 
 import interfaces.Draggable;
-import model.NotePadPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,6 @@
-package test;
+package model;
 
 import interfaces.Clickable;
-import model.NotePadIcon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

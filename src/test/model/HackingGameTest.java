@@ -1,24 +1,22 @@
-package test;
-
-import model.HackingGame;
+package model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import model.NotePadPage;
+import model.exceptions.GameIsAlreadyLoggedInException;
+import model.exceptions.GameIsAlreadyOverException;
+import model.exceptions.GameIsAlreadyPlayedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 class HackingGameTest {
     private HackingGame game;
     private Image notePadImg;
 
     @BeforeEach
-    void runBefore() throws IOException {
+    void runBefore() {
         game = new HackingGame();
 
     }
@@ -58,10 +56,23 @@ class HackingGameTest {
     void testGameIsOver() {
         assertFalse(game.isOver());
 
-        game.gameIsOver();
+        try {
+            game.gameIsOver();
+
+        } catch (GameIsAlreadyOverException exception) {
+            fail("Caught GameIsAlreadyOverException");
+        }
+
 
         assertTrue(game.isOver());
         assertFalse(game.isLogIn());
+
+        try {
+            game.gameIsOver();
+            fail("No exception was thrown");
+        } catch (GameIsAlreadyOverException exception) {
+
+        }
     }
 
     @Test
@@ -73,9 +84,20 @@ class HackingGameTest {
 
         assertFalse(game.isLogIn());
 
-        game.gameIsLogIn();
+        try {
+            game.gameIsLogIn();
+        } catch (GameIsAlreadyLoggedInException exception) {
+            fail("GameIsAlreadyLoggedInException is caught");
+        }
 
         assertTrue(game.isLogIn());
+
+        try {
+            game.gameIsLogIn();
+            fail("No exception is thrown");
+        } catch (GameIsAlreadyLoggedInException exception) {
+
+        }
     }
 
     @Test
@@ -87,14 +109,27 @@ class HackingGameTest {
 
         assertTrue(game.isOver());
 
-        game.gameIsPlayed();
+        try {
+            game.gameIsPlayed();
+
+        } catch (GameIsAlreadyPlayedException exception) {
+            fail("GameIsAlreadyPlayedException is caught!");
+        }
 
         assertFalse(game.isLogIn());
         assertFalse(game.isOver());
+
+        try {
+            game.gameIsPlayed();
+            fail("No exception is caught!");
+        } catch (GameIsAlreadyPlayedException exception) {
+
+        }
+
     }
 
     @Test
-    void testKeyPressedLogIn() throws FileNotFoundException {
+    void testKeyPressedLogIn() {
         //game is at log in state and password is an empty string
         assertTrue(game.isLogIn());
         assertEquals(game.DEFAULT_PASSWORD.length(), game.getPassword().length());
@@ -161,8 +196,13 @@ class HackingGameTest {
     }
 
     @Test
-    void testKeyPressedMainGame() throws FileNotFoundException {
-        game.gameIsPlayed();
+    void testKeyPressedMainGame() {
+        try {
+            game.gameIsPlayed();
+
+        } catch (GameIsAlreadyPlayedException exception) {
+            fail("GameIsAlreadyPlayedException is caught!");
+        }
         NotePadPage notePadPage = game.getNotePadPage();
 
         //When input dialog box is active
@@ -240,8 +280,14 @@ class HackingGameTest {
     }
 
     @Test
-    void testKeyPressedGameOver() throws FileNotFoundException {
-        game.gameIsOver();
+    void testKeyPressedGameOver() {
+
+        try {
+            game.gameIsOver();
+
+        } catch (GameIsAlreadyOverException exception) {
+            fail("GameIsAlreadyOverException is caught");
+        }
 
         //make sure game is in game over state
         assertTrue(game.isOver());

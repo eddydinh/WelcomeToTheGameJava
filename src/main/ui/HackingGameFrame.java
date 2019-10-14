@@ -7,9 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import model.HackingGame;
 
 public class HackingGameFrame extends JFrame {
@@ -18,7 +15,7 @@ public class HackingGameFrame extends JFrame {
     private UiPanel uiPanel;
     private HackingGame theGame;
 
-    HackingGameFrame() throws IOException {
+    HackingGameFrame() {
         super("WELCOME TO THE GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -80,18 +77,16 @@ public class HackingGameFrame extends JFrame {
     private class KeyHandler extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            try {
-                theGame.keyPressed(e.getKeyCode());
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
+
+            theGame.keyPressed(e.getKeyCode());
+
         }
     }
 
     /*
      * Play the game
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new HackingGameFrame();
     }
 }

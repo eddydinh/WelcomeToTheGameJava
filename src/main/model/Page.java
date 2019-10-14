@@ -56,7 +56,7 @@ public abstract class Page implements Draggable {
     private boolean inputHasCursor = false;
     private boolean isPressed = false;
 
-    private static final Color DEFAULT_INPUT_COLOR = new Color(173,173,173);
+    public static final Color DEFAULT_INPUT_COLOR = new Color(173,173,173);
 
     public Page(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
         setMainPageX(mainX);
