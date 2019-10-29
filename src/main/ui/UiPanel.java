@@ -9,6 +9,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -70,8 +73,7 @@ public class UiPanel extends JPanel {
                                 || validateMouse(event, PAGE_CLOSE_BTN, notePadPage)
                                 || validateMouse(event, PAGE_CLOSE_BTN, browserPage)) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
-                } else if (validateMouse(event, PAGE_INPUT, notePadPage)
-                        || validateMouse(event, PAGE_INPUT, browserPage)) {
+                } else if (validateMouse(event, PAGE_INPUT, notePadPage)) {
                     setCursor(new Cursor(Cursor.TEXT_CURSOR));
                 } else {
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -188,15 +190,14 @@ public class UiPanel extends JPanel {
     }
 
     private void onMouseClickedPageInput(Page page) {
-        if (page == notePadPage) {
-            browserPage.setInputHasCursor(false);
-        } else {
-            notePadPage.setInputHasCursor(false);
-        }
-        if (!page.inputHasCursor()) {
-            page.setInputContent("");
-            page.setInputTextColor(new Color(0, 0, 0));
-            page.setInputHasCursor(true);
+        if (page instanceof NotePadPage) {
+
+
+            if (!page.inputHasCursor()) {
+                page.setInputContent("");
+                page.setInputTextColor(new Color(0, 0, 0));
+                page.setInputHasCursor(true);
+            }
         }
 
     }
@@ -306,7 +307,7 @@ public class UiPanel extends JPanel {
         gameGraphics.setColor(new Color(255, 255, 255));
         drawFlashingCursor(gameGraphics,
                 (theGame.WIDTH - stringWidth) / 2 + 10,
-                centerY + 100,
+                centerY + 55,
                 stringWidth,
                 new Color(255, 255, 255));
         gameGraphics.setColor(savedColor);
@@ -323,38 +324,65 @@ public class UiPanel extends JPanel {
         drawIcon(gameGraphics, notePadIcon);
         drawIcon(gameGraphics, browserIcon);
         if (notePadIcon.isDoubleClicked()) {
-            drawNotePage(gameGraphics);
+            drawPage(gameGraphics, notePadIcon.getPage());
         }
         if (browserIcon.isDoubleClicked()) {
-            drawBrowserPage(gameGraphics);
+            drawPage(gameGraphics, browserIcon.getPage());
         }
 
     }
 
-    private void drawBrowserPage(Graphics gameGraphics) {
-        drawMainPage(gameGraphics, browserPage);
-        drawNavBar(gameGraphics, browserPage);
-        drawCloseBtn(gameGraphics, browserPage);
-        drawInput(gameGraphics, browserPage);
-        drawInputContent(gameGraphics, browserPage);
-        drawMainPageWelcomeMessage(gameGraphics);
+    private void drawPage(Graphics gameGraphics, Page page) {
+        drawMainPage(gameGraphics, page);
+        drawNavBar(gameGraphics, page);
+        drawCloseBtn(gameGraphics, page);
+        drawInput(gameGraphics, page);
+        drawInputContent(gameGraphics, page);
+        if (page instanceof BrowserPage) {
+            drawMainPageWelcomeMessage(gameGraphics);
+            drawWebLinks(gameGraphics);
+        }
+
     }
+
+    private void drawWebLinks(Graphics gameGraphics) {
+        HashMap<String, WebLink> webLinks = browserPage.getWebLinks();
+        List<String> webNames = theGame.webNames;
+        int x = browserPage.getMainPageX() + 20;
+        int y = browserPage.getMainPageY() + 120;
+        int linkMarginBottom = 25;
+        for (int i = 0; i < webNames.size(); i++) {
+            if (y <= browserPage.getMainPageY() + browserPage.getMainPageHeight()) {
+                String name = webNames.get(i);
+                WebLink link = (WebLink) webLinks.get(name);
+                drawMessage(name + " - " + link.toString(), gameGraphics, 15, x, y, Color.BLUE);
+                y += linkMarginBottom;
+            } else {
+                break;
+            }
+        }
+
+    }
+
 
     private void drawMainPageWelcomeMessage(Graphics gameGraphics) {
-        drawMessage("WELCOME TO THE DEEP WEB", gameGraphics,
-                50,
-                browserPage.getMainPageX() + 100,
-                browserPage.getMainPageY() + 100, Color.BLACK);
+        drawMessage("The Deep Wiki I", gameGraphics, 20,
+                browserPage.getMainPageX() + 10,
+                browserPage.getMainPageY() + 75, Color.BLACK);
+        drawLine(gameGraphics, Color.BLACK,
+                browserPage.getMainPageX() + 10,
+                browserPage.getMainPageY() + 85,
+                browserPage.getMainPageX() + browserPage.getNavBarWidth() - 20,
+                browserPage.getMainPageY() + 85);
     }
 
-    private void drawNotePage(Graphics gameGraphics) {
-        drawMainPage(gameGraphics, notePadPage);
-        drawNavBar(gameGraphics, notePadPage);
-        drawCloseBtn(gameGraphics, notePadPage);
-        drawInput(gameGraphics, notePadPage);
-        drawInputContent(gameGraphics, notePadPage);
-
+    private void drawLine(Graphics gameGraphics, Color color, int x1, int y1, int x2, int y2) {
+        Color savedColor = gameGraphics.getColor();
+        gameGraphics.setColor(color);
+        gameGraphics.drawLine(x1, y1, x2, y2);
+        gameGraphics.setColor(savedColor);
     }
+
 
     private void drawInputContent(Graphics gameGraphics, Page page) {
 
@@ -364,7 +392,7 @@ public class UiPanel extends JPanel {
                 page.getInputX() + 10,
                 page.getInputY() + 20,
                 page.getInputTextColor());
-        if (page.inputHasCursor()) {
+        if (page.inputHasCursor() && page instanceof NotePadPage) {
 
             drawFlashingCursor(gameGraphics,
                     page.getInputX() + 10,
@@ -413,7 +441,11 @@ public class UiPanel extends JPanel {
                 page.getNavBarY(),
                 page.getNavBarWidth(),
                 page.getNavBarHeight());
-        drawMessage(page.getPageName(),
+        String pageName = page.getPageName();
+        if (page instanceof BrowserPage) {
+            pageName = pageName + " - Anonymous Node Network";
+        }
+        drawMessage(pageName,
                 gameGraphics,
                 20,
                 page.getNavBarX() + 10,

@@ -51,4 +51,10 @@ public class NotePadIconTest {
 
     }
 
+    @Test
+    void testGetPage() {
+        assertEquals(game.getNotePadPage(), notePadIcon.getPage());
+
+    }
+
 }

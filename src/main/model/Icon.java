@@ -16,7 +16,7 @@ public abstract class Icon implements Clickable {
 
     private boolean isClicked = false;
     private boolean isDoubleClicked = false;
-
+    protected Page page;
 
     public Image getIconImg() {
         return iconImg;
@@ -115,5 +115,15 @@ public abstract class Icon implements Clickable {
 
     }
 
+    void setPage(Page thePage) {
+        if (page != thePage) {
+            page = thePage;
+            page.setIcon(this);
+        }
+    }
 
+
+    public Page getPage() {
+        return page;
+    }
 }

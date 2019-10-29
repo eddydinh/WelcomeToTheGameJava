@@ -56,7 +56,9 @@ public abstract class Page implements Draggable {
     private boolean inputHasCursor = false;
     private boolean isPressed = false;
 
-    public static final Color DEFAULT_INPUT_COLOR = new Color(173,173,173);
+    public static final Color DEFAULT_INPUT_COLOR = new Color(173, 173, 173);
+
+    protected Icon icon;
 
     public Page(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
         setMainPageX(mainX);
@@ -264,4 +266,11 @@ public abstract class Page implements Draggable {
     }
 
     public abstract void setUpPage();
+
+    public void setIcon(Icon theIcon) {
+        if (icon != theIcon) {
+            icon = theIcon;
+            icon.setPage(this);
+        }
+    }
 }

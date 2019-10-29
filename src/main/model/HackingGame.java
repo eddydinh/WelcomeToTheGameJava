@@ -7,9 +7,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.*;
 
 import model.exceptions.GameIsAlreadyLoggedInException;
 import model.exceptions.GameIsAlreadyOverException;
@@ -27,8 +28,10 @@ public class HackingGame {
     public static final String DEFAULT_NOTES_NAME = "Notes";
     public static final String DEFAULT_BROWSER_NAME = "A.N.N";
     public static final String DEFAULT_NOTE_FILE_PATH = "src/notepad.txt";
+    public static final String DEFAULT_WEB_LINKS_PATH = "src/weblinks.txt";
     private static final String DEFAULT_NOTE_IMAGE_PATH = "src/img/notePadIcon.png";
     private static final String DEFAULT_BROWSER_IMAGE_PATH = "src/img/browserIcon.png";
+    private static final String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyz0123456789";
 
     private boolean isGameOver;
     public List<String> lines;
@@ -59,6 +62,7 @@ public class HackingGame {
     private BrowserPage browserPage;
 
 
+
     //Set isGameOver value
     //MODIFIES: isGameOver
     //EFFECTS: set isGameOver boolean value to given value
@@ -75,6 +79,7 @@ public class HackingGame {
 
     private boolean isGameLogIn = true;
     private String password;
+    public List<String> webNames = new ArrayList<>();
 
     public HackingGame() {
 
@@ -88,13 +93,62 @@ public class HackingGame {
             Image notePadImage = getImage(DEFAULT_NOTE_IMAGE_PATH);
             Image browserImage = getImage(DEFAULT_BROWSER_IMAGE_PATH);
             notePadIcon = new NotePadIcon(50, 50, 80, 90, DEFAULT_NOTES_NAME, notePadImage);
-            browserIcon = new BrowserIcon(50, 200, 80, 90, DEFAULT_BROWSER_NAME, browserImage);
             notePadPage = new NotePadPage(50, 400, 400, 500, DEFAULT_NOTES_NAME);
+            notePadIcon.setPage(notePadPage);
+            browserIcon = new BrowserIcon(50, 200, 80, 90, DEFAULT_BROWSER_NAME, browserImage);
             browserPage = new BrowserPage(475, 100, 1000, 900, DEFAULT_BROWSER_NAME);
+            generateWebLinks(browserPage);
+            browserIcon.setPage(browserPage);
         }
 
 
     }
+
+    private void generateWebLinks(BrowserPage browserPage) {
+        List<String> linksArray = new ArrayList<>();
+        try {
+            linksArray = readToLines(DEFAULT_WEB_LINKS_PATH);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        for (int i = 0; i < linksArray.size(); i++) {
+            String webName = linksArray.get(i);
+            webNames.add(webName);
+            WebLink link = new WebLink(webName, generateRandomLinkFromName(webName));
+            browserPage.addWebLink(link);
+        }
+
+
+    }
+
+//    public static void printMap(HashMap mp) {
+//        Iterator it = mp.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry pair = (Map.Entry) it.next();
+//            System.out.println(pair.getKey() + " = " + pair.getValue().toString());
+//            it.remove(); // avoids a ConcurrentModificationException
+//        }
+//    }
+
+    private String generateRandomLinkFromName(String webName) {
+        String generatedString = hashWebName(webName);
+        return "http://" + generatedString + ".ann";
+    }
+
+    private String hashWebName(String webName) {
+
+        StringBuilder returnString = new StringBuilder();
+        int s = 0;
+        while (s <= 27) {
+            int character = webName.charAt(s % webName.length());
+            returnString.append(ALPHA_NUMERIC_STRING.charAt(character % ALPHA_NUMERIC_STRING.length()));
+            s++;
+        }
+
+
+        return returnString.toString();
+    }
+
 
     public List<String> readToLines(String filePath) throws IOException {
 
