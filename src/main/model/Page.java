@@ -6,6 +6,7 @@ import java.awt.*;
 
 public abstract class Page implements Draggable {
 
+
     //Nav bar attributes
     private int navBarX;
     private int navBarY;
@@ -60,6 +61,8 @@ public abstract class Page implements Draggable {
 
     protected Icon icon;
 
+    private MousePosDetector mousePosDetector;
+
     public Page(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
         setMainPageX(mainX);
         setMainPageY(mainY);
@@ -68,6 +71,7 @@ public abstract class Page implements Draggable {
         setMainPageHeight(mainHeight);
         setInputTextColor(DEFAULT_INPUT_COLOR);
         setUpPage();
+        mousePosDetector = new MousePosDetector();
     }
 
     public int getNavBarX() {
@@ -223,38 +227,37 @@ public abstract class Page implements Draggable {
         this.inputHasCursor = inputHasCursor;
     }
 
+
     public boolean isMouseOverCloseBtn(double mouseX, double mouseY) {
-        if (mouseX > getCloseBtnX()
-                && mouseX < getCloseBtnX() + getCloseBtnWidth()
-                && mouseY > getCloseBtnY()
-                && mouseY < getCloseBtnY() + getCloseBtnHeight()) {
-            return true;
-        }
-        return false;
+
+        return mousePosDetector.detectMousePos(mouseX, mouseY,
+                getCloseBtnX(),
+                getCloseBtnX() + getCloseBtnWidth(),
+                getCloseBtnY(),
+                getCloseBtnY() + getCloseBtnHeight());
 
 
     }
 
     public boolean isMouseOverInput(double mouseX, double mouseY) {
-        if (mouseX > getInputX()
-                && mouseX < getInputX() + getInputWidth()
-                && mouseY > getInputY()
-                && mouseY < getInputY() + getInputHeight()) {
-            return true;
-        }
-        return false;
+
+        return mousePosDetector.detectMousePos(mouseX, mouseY,
+                getInputX(),
+                getInputX() + getInputWidth(),
+                getInputY(),
+                getInputY() + getInputHeight());
 
 
     }
 
     public boolean isMouseOverNavBar(double mouseX, double mouseY) {
-        if (mouseX > getNavBarX()
-                && mouseX < getNavBarX() + getNavBarWidth() - getCloseBtnWidth()
-                && mouseY > getNavBarY()
-                && mouseY < getNavBarY() + getNavBarHeight()) {
-            return true;
-        }
-        return false;
+
+
+        return mousePosDetector.detectMousePos(mouseX, mouseY,
+                getNavBarX(),
+                getNavBarX() + getNavBarWidth() - getCloseBtnWidth(),
+                getNavBarY(),
+                getNavBarY() + getNavBarHeight());
 
 
     }

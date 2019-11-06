@@ -15,6 +15,7 @@ import java.util.*;
 import model.exceptions.GameIsAlreadyLoggedInException;
 import model.exceptions.GameIsAlreadyOverException;
 import model.exceptions.GameIsAlreadyPlayedException;
+import ui.Constants;
 
 
 /*
@@ -279,9 +280,10 @@ public class HackingGame {
     //MODIFIES: this
     //EFFECTS: let user reboot into main login screen
     private void validateKeyGameOver(int keyCode) {
+        Constants constants = new Constants();
         if (keyCode == KeyEvent.VK_R) {
             setPassword(DEFAULT_PASSWORD);
-            notePadPage.setInputContent(notePadPage.DEFAULT_INPUT);
+            notePadPage.setInputContent(constants.DEFAULT_INPUT_NOTEPAD);
             try {
                 gameIsLogIn();
             } catch (GameIsAlreadyLoggedInException exception) {

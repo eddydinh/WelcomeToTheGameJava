@@ -2,6 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ui.Constants;
 
 import java.io.IOException;
 
@@ -10,13 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NotePadPageTest {
     private HackingGame game;
     private NotePadPage notePadPage;
-
+    private Constants constants;
 
     @BeforeEach
     void runBefore() throws IOException {
 
         game = new HackingGame();
         notePadPage = game.getNotePadPage();
+        constants = new Constants();
 
     }
 
@@ -48,7 +50,7 @@ public class NotePadPageTest {
         assertEquals(373, notePadPage.getCloseBtnY());
 
         //Input content
-        assertEquals(notePadPage.DEFAULT_INPUT, notePadPage.getInputContent());
+        assertEquals(constants.DEFAULT_INPUT_NOTEPAD, notePadPage.getInputContent());
 
         //inputHasCursor
         assertFalse(notePadPage.inputHasCursor());

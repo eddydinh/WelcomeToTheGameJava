@@ -83,6 +83,8 @@ public abstract class Icon implements Clickable {
         this.iconName = iconName;
     }
 
+    private MousePosDetector mousePosDetector;
+
     public Icon(int iconX, int iconY, int iconWidth, int iconHeight, String iconName, Image iconImg) {
         setIconImg(iconImg);
         setIconX(iconX);
@@ -90,6 +92,7 @@ public abstract class Icon implements Clickable {
         setIconHeight(iconHeight);
         setIconWidth(iconWidth);
         setIconName(iconName);
+        mousePosDetector = new MousePosDetector();
 
     }
 
@@ -104,14 +107,13 @@ public abstract class Icon implements Clickable {
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {
-        if (mouseX > getIconX()
-                && mouseX < getIconX() + getIconWidth()
-                && mouseY > getIconY()
-                && mouseY < getIconY() + getIconHeight()) {
-            return true;
-        }
-        return false;
 
+        return mousePosDetector.detectMousePos(mouseX,
+                mouseY,
+                getIconX(),
+                getIconX() + getIconWidth(),
+                getIconY(),
+                getIconY() + getIconHeight());
 
     }
 

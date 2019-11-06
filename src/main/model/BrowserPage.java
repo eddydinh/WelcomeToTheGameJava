@@ -1,16 +1,20 @@
 package model;
 
+import ui.Constants;
+
 import java.util.HashMap;
 
 public class BrowserPage extends Page {
-    public static final String DEFAULT_INPUT = "http://dd7cb6400452a07c5d17619c84c.ann";
+
 
 
     private HashMap<String, WebLink> webLinks = new HashMap<>();
 
     public BrowserPage(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
+
         super(mainX, mainY, mainWidth, mainHeight, pageName);
-        setInputContent(DEFAULT_INPUT);
+        Constants constants = new Constants();
+        setInputContent(constants.DEFAULT_INPUT_BROWSER);
 
     }
 

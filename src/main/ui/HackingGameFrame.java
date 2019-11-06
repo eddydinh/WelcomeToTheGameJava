@@ -14,6 +14,7 @@ public class HackingGameFrame extends JFrame {
     private static final int INTERVAL_FLASH = 500;
     private UiPanel uiPanel;
     private HackingGame theGame;
+    private FlashCursorDisplay flashCursorDisplay;
 
     HackingGameFrame() {
         super("WELCOME TO THE GAME");
@@ -21,6 +22,7 @@ public class HackingGameFrame extends JFrame {
         setUndecorated(true);
         theGame = new HackingGame();
         uiPanel = new UiPanel(theGame);
+        flashCursorDisplay = new FlashCursorDisplay();
         uiPanel.setLayout(null);
         add(uiPanel);
         addKeyListener(new KeyHandler());
@@ -57,7 +59,7 @@ public class HackingGameFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent ae) {
 
-                uiPanel.updateFlash();
+                flashCursorDisplay.updateFlash();
             }
         });
         t.start();

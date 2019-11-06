@@ -1,12 +1,14 @@
 package model;
 
+import ui.Constants;
+
 public class NotePadPage extends Page {
 
-    public static final String DEFAULT_INPUT = "Enter note...";
 
     public NotePadPage(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
         super(mainX, mainY, mainWidth, mainHeight, pageName);
-        setInputContent(DEFAULT_INPUT);
+        Constants constants = new Constants();
+        setInputContent(constants.DEFAULT_INPUT_NOTEPAD);
     }
 
     @Override
