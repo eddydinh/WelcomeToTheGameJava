@@ -19,6 +19,7 @@ public class GameScreenTest {
 
     }
 
+
     @Test
     void testInit(){
         assertEquals(0.5, hackScreen.chance);
