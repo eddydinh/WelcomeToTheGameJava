@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-class HackingGameTest {
-    private HackingGame game;
+class ConcreteHackingGameTest {
+    private ConcreteHackingGame game;
     private Image notePadImg;
 
     @BeforeEach
     void runBefore() {
-        game = new HackingGame();
+        game = new ConcreteHackingGame();
 
     }
 
@@ -28,7 +28,7 @@ class HackingGameTest {
         assertFalse(game.isOver());
         assertTrue(game.isLogIn());
         assertEquals(game.DEFAULT_PASSWORD, game.getPassword());
-        assertEquals(HackingGame.getInstance(), game);
+        assertEquals(ConcreteHackingGame.getInstance(), game);
 
     }
 

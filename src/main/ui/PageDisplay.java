@@ -5,21 +5,20 @@ import model.*;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
 
 public class PageDisplay {
     private List<Page> pages;
     private MessageDisplay messageDisplay;
-    private HackingGame theGame;
+    private ConcreteHackingGame theGame;
     private Constants constants;
     private RectDisplay rectDisplay;
     private FlashCursorDisplay flashCursorDisplay;
     private List<WebLink> webLinks;
 
 
-    PageDisplay(List<Page> pages, HackingGame theGame) {
+    PageDisplay(List<Page> pages, ConcreteHackingGame theGame) {
         this.pages = pages;
         messageDisplay = new MessageDisplay(theGame);
         this.theGame = theGame;

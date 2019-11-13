@@ -9,7 +9,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BrowserPageTest {
-    private HackingGame game;
+    private ConcreteHackingGame game;
     private BrowserPage browserPage;
     private Constants constants;
 
@@ -17,7 +17,7 @@ public class BrowserPageTest {
     @BeforeEach
     void runBefore() throws IOException {
 
-        game = new HackingGame();
+        game = new ConcreteHackingGame();
         browserPage = game.getBrowserPage();
         constants = new Constants();
 

@@ -2,7 +2,7 @@ package ui;
 
 import interfaces.Clickable;
 
-import model.HackingGame;
+import model.ConcreteHackingGame;
 import model.Icon;
 
 
@@ -15,7 +15,7 @@ public class IconDisplay {
     private MessageDisplay messageDisplay;
     private Color iconBgColor = new Color(204, 232, 255, 25);
 
-    IconDisplay(List<Icon> icons, HackingGame theGame) {
+    IconDisplay(List<Icon> icons, ConcreteHackingGame theGame) {
         this.icons = icons;
         messageDisplay = new MessageDisplay(theGame);
     }

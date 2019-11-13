@@ -1,6 +1,5 @@
 package ui;
 
-import interfaces.Clickable;
 import model.*;
 
 import javax.swing.JPanel;
@@ -11,13 +10,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 
 public class UiPanel extends JPanel {
 
 
-    private HackingGame theGame;
+    private ConcreteHackingGame theGame;
     private int centerY;
     private MouseMotionListener mlDrag;
     private MouseListener mlPressed;
@@ -29,7 +27,7 @@ public class UiPanel extends JPanel {
     private FlashCursorDisplay flashCursorDisplay;
 
 
-    public UiPanel(HackingGame theGame) {
+    public UiPanel(ConcreteHackingGame theGame) {
 
         constants = new Constants();
         flashCursorDisplay = new FlashCursorDisplay();
@@ -48,7 +46,7 @@ public class UiPanel extends JPanel {
         pageDisplay = new PageDisplay(pages, theGame);
 
 
-        setPreferredSize(new Dimension(HackingGame.WIDTH, HackingGame.LENGTH));
+        setPreferredSize(new Dimension(ConcreteHackingGame.WIDTH, ConcreteHackingGame.LENGTH));
         setBackground(Color.BLACK);
         this.theGame = theGame;
         messageDisplay = new MessageDisplay(theGame);

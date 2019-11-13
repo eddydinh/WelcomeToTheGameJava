@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NotePadIconTest {
     private NotePadIcon notePadIcon;
     private Image notePadImage;
-    private HackingGame game;
+    private ConcreteHackingGame game;
     private BrowserIcon browserIcon;
 
     @BeforeEach
     void runBefore() throws IOException {
-        game = new HackingGame();
+        game = new ConcreteHackingGame();
         notePadIcon = game.getNotePadIcon();
         notePadImage = notePadIcon.getIconImg();
         browserIcon = game.getBrowserIcon();

@@ -1,7 +1,6 @@
 package model;
 
 import java.awt.event.KeyEvent;
-import java.sql.SQLOutput;
 
 public class HackScreen extends GameScreen {
 
@@ -30,7 +29,7 @@ public class HackScreen extends GameScreen {
     private void submit() {
         if (inputCode.equals(askedCode)) {
             inputCode = "";
-            notifyObservers(new HackingGame().GAME_IS_PLAYED);
+            notifyObservers(new ConcreteHackingGame().GAME_IS_PLAYED);
         }
     }
 

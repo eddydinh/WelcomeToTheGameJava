@@ -1,13 +1,13 @@
 package ui;
 
-import model.HackingGame;
+import model.ConcreteHackingGame;
 
 import java.awt.*;
 
 public class MessageDisplay {
-    private HackingGame theGame;
+    private ConcreteHackingGame theGame;
 
-    public MessageDisplay(HackingGame theGame) {
+    public MessageDisplay(ConcreteHackingGame theGame) {
         this.theGame = theGame;
     }
 

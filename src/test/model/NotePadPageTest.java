@@ -9,14 +9,14 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NotePadPageTest {
-    private HackingGame game;
+    private ConcreteHackingGame game;
     private NotePadPage notePadPage;
     private Constants constants;
 
     @BeforeEach
     void runBefore() throws IOException {
 
-        game = new HackingGame();
+        game = new ConcreteHackingGame();
         notePadPage = game.getNotePadPage();
         constants = new Constants();
 

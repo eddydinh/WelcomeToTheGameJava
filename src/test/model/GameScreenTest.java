@@ -3,18 +3,16 @@ package model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameScreenTest {
-    private HackingGame game;
+    private ConcreteHackingGame game;
     private HackScreen hackScreen;
 
     @BeforeEach
     void runBefore() {
-        game = new HackingGame();
+        game = new ConcreteHackingGame();
         hackScreen = game.getHackScreen();
 
     }

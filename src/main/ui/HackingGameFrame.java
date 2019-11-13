@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import model.HackingGame;
+import model.ConcreteHackingGame;
 
 
 public class HackingGameFrame extends JFrame {
@@ -16,14 +16,14 @@ public class HackingGameFrame extends JFrame {
     private static final int INTERVAL_FLASH = 500;
     private static final int INTERVAL_INITIALIZE = 10000;
     private UiPanel uiPanel;
-    private HackingGame theGame;
+    private ConcreteHackingGame theGame;
     private FlashCursorDisplay flashCursorDisplay;
 
     HackingGameFrame() {
         super("WELCOME TO THE GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
-        theGame = HackingGame.getInstance();
+        theGame = ConcreteHackingGame.getInstance();
         uiPanel = new UiPanel(theGame);
         flashCursorDisplay = new FlashCursorDisplay();
         uiPanel.setLayout(null);

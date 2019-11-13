@@ -2,10 +2,9 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public abstract class GameScreen {
-    private List<Game> observers = new ArrayList<>();
+    private List<HackingGame> observers = new ArrayList<>();
     protected double chance;
     public String inputCode;
     public String askedCode;
@@ -18,14 +17,14 @@ public abstract class GameScreen {
     }
 
 
-    public void addObserver(Game observer) {
+    public void addObserver(HackingGame observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);
         }
     }
 
     public void notifyObservers(String gameState) {
-        for (Game observer : observers) {
+        for (HackingGame observer : observers) {
             double d = Math.random();
             if (gameState == observer.HACK_SCREEN
                     && observer.state == observer.GAME_IS_PLAYED
