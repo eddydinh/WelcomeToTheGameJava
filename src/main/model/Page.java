@@ -34,6 +34,9 @@ public abstract class Page implements Draggable {
     //Content of input
     private String inputContent;
 
+    public String mainPageState;
+    public static String HOME = "HOME";
+
     public String getPageName() {
         return pageName;
     }
@@ -72,6 +75,7 @@ public abstract class Page implements Draggable {
         setInputTextColor(DEFAULT_INPUT_COLOR);
         setUpPage();
         mousePosDetector = new MousePosDetector();
+        mainPageState = HOME;
     }
 
     public int getNavBarX() {

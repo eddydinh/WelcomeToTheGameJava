@@ -7,11 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
 import model.HackingGame;
+
 
 public class HackingGameFrame extends JFrame {
     private static final int INTERVAL = 20;
     private static final int INTERVAL_FLASH = 500;
+    private static final int INTERVAL_INITIALIZE = 10000;
     private UiPanel uiPanel;
     private HackingGame theGame;
     private FlashCursorDisplay flashCursorDisplay;
@@ -20,7 +23,7 @@ public class HackingGameFrame extends JFrame {
         super("WELCOME TO THE GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
-        theGame = new HackingGame();
+        theGame = HackingGame.getInstance();
         uiPanel = new UiPanel(theGame);
         flashCursorDisplay = new FlashCursorDisplay();
         uiPanel.setLayout(null);
@@ -31,6 +34,7 @@ public class HackingGameFrame extends JFrame {
         setVisible(true);
         addTimer();
         addTimerFlash();
+        addTimerInitializeHackScreen();
 
 
     }
@@ -65,6 +69,22 @@ public class HackingGameFrame extends JFrame {
         t.start();
     }
 
+
+    //Set up timer for flash
+    //MODIFIES: UiPanel.flash
+    //EFFECTS: invert UiPanel's flash boolean variable, make cursor flash
+    //INTERVAL milliseconds
+    private void addTimerInitializeHackScreen() {
+        Timer t = new Timer(INTERVAL_INITIALIZE, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+
+                theGame.getHackScreen().notifyObservers(theGame.HACK_SCREEN);
+            }
+        });
+        t.start();
+    }
+
     // Centres frame on desktop
     // MODIFIES: this
     // EFFECTS: location of frame is set so frame is centred on desktop
@@ -83,6 +103,15 @@ public class HackingGameFrame extends JFrame {
             theGame.keyPressed(e.getKeyCode());
 
         }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+            int keyCode = (int) e.getKeyChar();
+            char keyChar = e.getKeyChar();
+            theGame.keyTyped(keyCode, keyChar);
+        }
+
+
     }
 
     /*

@@ -2,9 +2,7 @@ package model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import model.exceptions.GameIsAlreadyLoggedInException;
-import model.exceptions.GameIsAlreadyOverException;
-import model.exceptions.GameIsAlreadyPlayedException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,23 +54,11 @@ class HackingGameTest {
     void testGameIsOver() {
         assertFalse(game.isOver());
 
-        try {
-            game.gameIsOver();
-
-        } catch (GameIsAlreadyOverException exception) {
-            fail("Caught GameIsAlreadyOverException");
-        }
+        game.setState(game.GAME_OVER);
 
 
         assertTrue(game.isOver());
-        assertFalse(game.isLogIn());
 
-        try {
-            game.gameIsOver();
-            fail("No exception was thrown");
-        } catch (GameIsAlreadyOverException exception) {
-
-        }
     }
 
     @Test
@@ -80,51 +66,33 @@ class HackingGameTest {
 
         assertTrue(game.isLogIn());
 
-        game.setGameLogIn(false);
+        game.setState(game.GAME_OVER);
 
         assertFalse(game.isLogIn());
 
-        try {
-            game.gameIsLogIn();
-        } catch (GameIsAlreadyLoggedInException exception) {
-            fail("GameIsAlreadyLoggedInException is caught");
-        }
+        game.setState(game.GAME_IS_PLAYED);
 
+        assertFalse(game.isLogIn());
+
+        game.setState(game.GAME_LOG_IN);
         assertTrue(game.isLogIn());
 
-        try {
-            game.gameIsLogIn();
-            fail("No exception is thrown");
-        } catch (GameIsAlreadyLoggedInException exception) {
 
-        }
     }
 
     @Test
     void testGameIsPlayed() {
-        assertTrue(game.isLogIn());
         assertFalse(game.isOver());
 
-        game.setGameOver(true);
+        game.setState(game.GAME_OVER);
 
         assertTrue(game.isOver());
 
-        try {
-            game.gameIsPlayed();
-
-        } catch (GameIsAlreadyPlayedException exception) {
-            fail("GameIsAlreadyPlayedException is caught!");
-        }
+        game.setState(game.GAME_IS_PLAYED);
 
         assertFalse(game.isLogIn());
         assertFalse(game.isOver());
 
-        try {
-            game.gameIsPlayed();
-            fail("No exception is caught!");
-        } catch (GameIsAlreadyPlayedException exception) {
-
-        }
 
     }
 
@@ -184,25 +152,24 @@ class HackingGameTest {
 
 
         //set isGameOver and isGameLogIn to true
-        game.setGameOver(true);
-        assertTrue(game.isLogIn());
+        game.setState(game.GAME_OVER);
+
         assertTrue(game.isOver());
+
+        game.setState(game.GAME_LOG_IN);
+
+        assertTrue(game.isLogIn());
 
         //When user hit enter with a non-empty password
         // -> move to main game state and isGameOver and isGameLogIn are both false
         game.keyPressed(KeyEvent.VK_ENTER);
-        assertFalse(game.isOver());
         assertFalse(game.isLogIn());
+        assertEquals(game.getState(), game.GAME_IS_PLAYED);
     }
 
     @Test
     void testKeyPressedMainGame() {
-        try {
-            game.gameIsPlayed();
-
-        } catch (GameIsAlreadyPlayedException exception) {
-            fail("GameIsAlreadyPlayedException is caught!");
-        }
+        game.setState(game.GAME_IS_PLAYED);
         NotePadPage notePadPage = game.getNotePadPage();
 
         //When input dialog box is active
@@ -214,30 +181,30 @@ class HackingGameTest {
         game.keyPressed(KeyEvent.VK_BACK_SPACE);
         assertEquals("", notePadPage.getInputContent());
 
-        game.keyPressed(KeyEvent.VK_SPACE);
+        game.keyTyped(KeyEvent.VK_SPACE, ' ');
         assertEquals(" ", notePadPage.getInputContent());
 
-        game.keyPressed(KeyEvent.VK_A);
-        game.keyPressed(KeyEvent.VK_1);
+        game.keyTyped(KeyEvent.VK_A, 'a');
+        game.keyTyped(KeyEvent.VK_1, '1');
         assertEquals(" a1", notePadPage.getInputContent());
 
         String str = " a1";
         for (int i = 0; i < 47; i++) {
-            game.keyPressed(KeyEvent.VK_C);
+            game.keyTyped(KeyEvent.VK_C, 'c');
             str += "c";
         }
         assertEquals(str, notePadPage.getInputContent());
 
-        game.keyPressed(KeyEvent.VK_A);
-        game.keyPressed(KeyEvent.VK_SPACE);
+        game.keyTyped(KeyEvent.VK_SPACE, ' ');
+        game.keyTyped(KeyEvent.VK_A, 'a');
         assertEquals(str, notePadPage.getInputContent());
 
-        game.keyPressed(KeyEvent.VK_BACK_SPACE);
-        game.keyPressed(KeyEvent.VK_BACK_SPACE);
+        game.keyTyped(KeyEvent.VK_BACK_SPACE, (char) 8);
+        game.keyTyped(KeyEvent.VK_BACK_SPACE, (char) 8);
         str = str.substring(0, str.length() - 2);
         assertEquals(str, notePadPage.getInputContent());
 
-        game.keyPressed(KeyEvent.VK_ENTER);
+        game.keyTyped(KeyEvent.VK_ENTER, (char) KeyEvent.VK_ENTER);
         assertEquals("", notePadPage.getInputContent());
 
 
@@ -269,12 +236,6 @@ class HackingGameTest {
         assertFalse(game.isOver());
         assertFalse(game.isLogIn());
 
-        //if user hits C
-        game.keyPressed(KeyEvent.VK_C);
-
-        //-> Game over state
-        assertTrue(game.isOver());
-        assertFalse(game.isLogIn());
 
 
     }
@@ -282,13 +243,7 @@ class HackingGameTest {
     @Test
     void testKeyPressedGameOver() {
 
-        try {
-            game.gameIsOver();
-
-        } catch (GameIsAlreadyOverException exception) {
-            fail("GameIsAlreadyOverException is caught");
-        }
-
+        game.setState(game.GAME_OVER);
         //make sure game is in game over state
         assertTrue(game.isOver());
         assertFalse(game.isLogIn());

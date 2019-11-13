@@ -10,8 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 
 public class UiPanel extends JPanel {
@@ -66,7 +66,8 @@ public class UiPanel extends JPanel {
                         iconDisplay.validateMouse(event, constants.NOTEPAD)
                                 || iconDisplay.validateMouse(event, constants.BROWSER)
                                 || pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.NOTEPAD)
-                                || pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.BROWSER)) {
+                                || pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.BROWSER)
+                                || pageDisplay.validateMouse(event, constants.WEB_LINK, constants.BROWSER)) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
                 } else if (pageDisplay.validateMouse(event, constants.PAGE_INPUT, constants.NOTEPAD)) {
                     setCursor(new Cursor(Cursor.TEXT_CURSOR));
@@ -98,23 +99,30 @@ public class UiPanel extends JPanel {
                 if (event.getClickCount() == 2) {
                     validateMouseOnDoubleClicked(event);
                 } else if (event.getClickCount() == 1) {
-                    if (iconDisplay.validateMouse(event, constants.NOTEPAD)) {
-                        iconDisplay.onMouseClickedIcon(constants.NOTEPAD);
-                    } else if (iconDisplay.validateMouse(event, constants.BROWSER)) {
-                        iconDisplay.onMouseClickedIcon(constants.BROWSER);
-                    } else if (pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.NOTEPAD)) {
-                        iconDisplay.onMouseClickedPageCloseBtn(constants.NOTEPAD);
-                    } else if (pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.BROWSER)) {
-                        iconDisplay.onMouseClickedPageCloseBtn(constants.BROWSER);
-                    } else if (pageDisplay.validateMouse(event, constants.PAGE_INPUT, constants.NOTEPAD)) {
-                        pageDisplay.onMouseClickedPageInput(constants.NOTEPAD);
-                    }
+                    checkMouseClicks(event);
 
                 }
             }
         });
 
 
+    }
+
+    private void checkMouseClicks(MouseEvent event) {
+        if (iconDisplay.validateMouse(event, constants.NOTEPAD)) {
+            iconDisplay.onMouseClickedIcon(constants.NOTEPAD);
+        } else if (iconDisplay.validateMouse(event, constants.BROWSER)) {
+            iconDisplay.onMouseClickedIcon(constants.BROWSER);
+        } else if (pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.NOTEPAD)) {
+            iconDisplay.onMouseClickedPageCloseBtn(constants.NOTEPAD);
+        } else if (pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.BROWSER)) {
+            theGame.getBrowserPage().mainPageState = theGame.getBrowserPage().HOME;
+            iconDisplay.onMouseClickedPageCloseBtn(constants.BROWSER);
+        } else if (pageDisplay.validateMouse(event, constants.PAGE_INPUT, constants.NOTEPAD)) {
+            pageDisplay.onMouseClickedPageInput(constants.NOTEPAD);
+        } else if (pageDisplay.validateMouse(event, constants.WEB_LINK, constants.BROWSER)) {
+            return;
+        }
     }
 
     private void validateMouseOnDoubleClicked(MouseEvent event) {
@@ -181,11 +189,51 @@ public class UiPanel extends JPanel {
             displayLogInScreen(gameGraphics);
         } else if (theGame.isOver()) {
             displayGameOverScreen(gameGraphics);
-        } else {
+        } else if (theGame.isPlayed()) {
             displayGameScreen(gameGraphics);
+        } else {
+            displayHackScreen(gameGraphics);
         }
 
 
+    }
+
+    private void displayHackScreen(Graphics gameGraphics) {
+        Color savedColor = gameGraphics.getColor();
+        Color messageTextColor = new Color(0, 215, 0);
+        drawMessage(constants.HACK_SCREEN_1, gameGraphics, 50, 0, centerY - 250, messageTextColor);
+        drawMessage(constants.HACK_SCREEN_2, gameGraphics, 25, 0, centerY - 150, messageTextColor);
+        drawMessage(constants.HACK_SCREEN_3, gameGraphics, 10, 0, centerY - 100, messageTextColor);
+        drawMessage(constants.HACK_SCREEN_4,
+                gameGraphics, 10, 0, centerY - 50, messageTextColor);
+        drawMessage(constants.HACK_SCREEN_5,
+                gameGraphics, 10, 0, centerY, messageTextColor);
+        drawCodes(gameGraphics);
+        gameGraphics.setColor(savedColor);
+    }
+
+    private void drawCodes(Graphics gameGraphics) {
+        Color savedColor = gameGraphics.getColor();
+        Color messageTextColor = new Color(0, 215, 0);
+        gameGraphics.setColor(messageTextColor);
+        gameGraphics.drawRect((theGame.WIDTH / 2) - 300, centerY + 50, 600, 50);
+        drawRect(gameGraphics, new Color(42, 42, 43), (theGame.WIDTH / 2) - 298, centerY + 52, 50, 48);
+        drawMessage("1", gameGraphics, 30, (theGame.WIDTH / 2) - 280, centerY + 85, Color.WHITE);
+        drawMessage(theGame.getHackScreen().askedCode, gameGraphics, 15,
+                (theGame.WIDTH / 2) - 240, centerY + 77, messageTextColor);
+        drawRect(gameGraphics, messageTextColor, (theGame.WIDTH / 2) - 300, centerY + 130, 30, 30);
+        drawMessage(">_", gameGraphics, 20, (theGame.WIDTH / 2) - 298, centerY + 150, Color.WHITE);
+        drawInputCode(gameGraphics);
+        gameGraphics.setColor(savedColor);
+    }
+
+    private void drawInputCode(Graphics gameGraphics) {
+        int contentWidth = drawMessage(theGame.getHackScreen().inputCode,
+                gameGraphics, 20, (theGame.WIDTH / 2) - 250,
+                centerY + 150,
+                Color.WHITE);
+        flashCursorDisplay.drawFlashingCursor(gameGraphics,
+                (theGame.WIDTH / 2) - 250, centerY + 165, contentWidth, Color.WHITE);
     }
 
 
@@ -204,11 +252,6 @@ public class UiPanel extends JPanel {
                 constants.GAME_OVER_MESSAGE_4,
                 gameGraphics, 25, 0, centerY + 50, messageTextColor);
         gameGraphics.setColor(new Color(255, 255, 255));
-        flashCursorDisplay.drawFlashingCursor(gameGraphics,
-                (theGame.WIDTH - stringWidth) / 2 + 10,
-                centerY + 55,
-                stringWidth,
-                new Color(255, 255, 255));
         gameGraphics.setColor(savedColor);
 
 

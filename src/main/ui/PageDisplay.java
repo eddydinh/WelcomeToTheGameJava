@@ -5,7 +5,8 @@ import model.*;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.List;
 
 public class PageDisplay {
@@ -14,7 +15,8 @@ public class PageDisplay {
     private HackingGame theGame;
     private Constants constants;
     private RectDisplay rectDisplay;
-    private  FlashCursorDisplay flashCursorDisplay;
+    private FlashCursorDisplay flashCursorDisplay;
+    private List<WebLink> webLinks;
 
 
     PageDisplay(List<Page> pages, HackingGame theGame) {
@@ -24,7 +26,11 @@ public class PageDisplay {
         constants = new Constants();
         rectDisplay = new RectDisplay();
         flashCursorDisplay = new FlashCursorDisplay();
+        BrowserPage browserPage = theGame.getBrowserPage();
+        webLinks = new ArrayList<>();
+
     }
+
 
     public boolean validateMouse(MouseEvent event, String type, int index) {
         Point point = event.getPoint();
@@ -37,8 +43,29 @@ public class PageDisplay {
             return true;
         } else if (type == constants.PAGE_NAVBAR && pages.get(index).isMouseOverNavBar(mouseX, mouseY)) {
             return true;
+        } else if (type == constants.WEB_LINK) {
+            return mouseIsOver(event, mouseX, mouseY);
         }
 
+        return false;
+    }
+
+    private boolean mouseIsOver(MouseEvent e, double mouseX, double mouseY) {
+        for (WebLink link : this.webLinks) {
+            link.hasLine = false;
+            if (link.isMouseOverLink(mouseX, mouseY)) {
+                link.hasLine = true;
+                if (e.getClickCount() > 0) {
+                    if (link instanceof BrokenWebLink) {
+                        theGame.getBrowserPage().mainPageState = constants.BROKEN;
+                    } else {
+                        theGame.getBrowserPage().mainPageState = constants.WORKING;
+                        theGame.getBrowserPage().currentWeb = (LinkWithLinks) link;
+                    }
+                }
+                return true;
+            }
+        }
         return false;
     }
 
@@ -99,10 +126,65 @@ public class PageDisplay {
         drawInput(gameGraphics, page);
         drawInputContent(gameGraphics, page);
         if (page instanceof BrowserPage) {
-            drawMainPageWelcomeMessage(gameGraphics);
-            drawWebLinks(gameGraphics);
+            drawBrowserMainPage(gameGraphics, page);
         }
 
+    }
+
+    private void drawBrowserMainPage(Graphics gameGraphics, Page page) {
+
+        if (page.mainPageState == page.HOME) {
+            drawHomePage(gameGraphics);
+        } else if (page.mainPageState == constants.BROKEN) {
+            drawBrokenPage(gameGraphics);
+        } else if (page.mainPageState == constants.WORKING) {
+            if (theGame.getBrowserPage().currentWeb.getLinks().size() < 25) {
+                populateLink(theGame.getBrowserPage().currentWeb);
+            }
+            drawWorkingPage(gameGraphics, theGame.getBrowserPage().currentWeb);
+        }
+
+
+    }
+
+    private void populateLink(WebLink currentWeb) {
+        ((LinkWithLinks) currentWeb)
+                .addLinks(webLinks
+                        .get(new Random().nextInt(webLinks.size() - 1)));
+
+    }
+
+    private void drawWorkingPage(Graphics gameGraphics, WebLink webLink) {
+        BrowserPage browserPage = theGame.getBrowserPage();
+        int x = theGame.getBrowserPage().getMainPageX() + 20;
+        int y = theGame.getBrowserPage().getMainPageY() + 120;
+        int linkMarginBottom = 25;
+        for (WebLink link : ((LinkWithLinks) webLink).getLinks()) {
+            if (y <= browserPage.getMainPageY() + browserPage.getMainPageHeight()) {
+                String name = link.getWebName();
+                int contentWidth = messageDisplay.drawMessage(name + " - " + link.toString(),
+                        gameGraphics, 15, x, y, Color.BLUE, link.hasLine);
+                setUpLink(link, x, y, linkMarginBottom, contentWidth);
+                y += linkMarginBottom;
+            }
+        }
+    }
+
+    private void drawBrokenPage(Graphics gameGraphics) {
+        BrowserPage browserPage = (BrowserPage) pages.get(1);
+        messageDisplay.drawMessage("Unable to connect to page", gameGraphics, 20,
+                browserPage.getMainPageX() + 10,
+                browserPage.getMainPageY() + 75, Color.BLACK);
+        drawLine(gameGraphics, Color.BLACK,
+                browserPage.getMainPageX() + 10,
+                browserPage.getMainPageY() + 85,
+                browserPage.getMainPageX() + browserPage.getNavBarWidth() - 20,
+                browserPage.getMainPageY() + 85);
+    }
+
+    private void drawHomePage(Graphics gameGraphics) {
+        drawMainPageWelcomeMessage(gameGraphics);
+        drawWebLinks(gameGraphics);
     }
 
     private void drawInput(Graphics gameGraphics, Page page) {
@@ -157,8 +239,6 @@ public class PageDisplay {
     }
 
 
-
-
     private void drawMainPage(Graphics gameGraphics, Page page) {
         rectDisplay.drawRect(gameGraphics,
                 new Color(255, 255, 255),
@@ -179,19 +259,28 @@ public class PageDisplay {
         int x = browserPage.getMainPageX() + 20;
         int y = browserPage.getMainPageY() + 120;
         int linkMarginBottom = 25;
-        for (int i = 0; i < webNames.size(); i++) {
-            if (y <= browserPage.getMainPageY() + browserPage.getMainPageHeight()) {
-                String name = webNames.get(i);
-                WebLink link = (WebLink) webLinks.get(name);
-                messageDisplay.drawMessage(name + " - " + link.toString(),
-                        gameGraphics, 15, x, y, Color.BLUE);
-                y += linkMarginBottom;
-            } else {
-                break;
-            }
+        int i = 0;
+        while (y <= browserPage.getMainPageY() + browserPage.getMainPageHeight()) {
+            String name = webNames.get(i);
+            WebLink link = (WebLink) webLinks.get(name);
+            int contentWidth = messageDisplay.drawMessage(name + " - " + link.toString(),
+                    gameGraphics, 15, x, y, Color.BLUE, link.hasLine);
+            setUpLink(link, x, y, linkMarginBottom, contentWidth);
+            this.webLinks.add(link);
+            y += linkMarginBottom;
+            i++;
         }
 
+
     }
+
+    private void setUpLink(WebLink link, int x, int y, int linkMarginBottom, int contentWidth) {
+        link.setLinkX(x);
+        link.setLinkY(y);
+        link.setLinkWidth(contentWidth);
+        link.setLinkLength(linkMarginBottom);
+    }
+
 
     private void drawMainPageWelcomeMessage(Graphics gameGraphics) {
         BrowserPage browserPage = (BrowserPage) pages.get(1);
@@ -253,9 +342,6 @@ public class PageDisplay {
         gameGraphics.drawLine(x1, y1, x2, y2);
         gameGraphics.setColor(savedColor);
     }
-
-
-
 
 
 }

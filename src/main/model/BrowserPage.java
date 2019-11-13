@@ -10,6 +10,9 @@ public class BrowserPage extends Page {
 
     private HashMap<String, WebLink> webLinks = new HashMap<>();
 
+    public LinkWithLinks currentWeb = null;
+
+
     public BrowserPage(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
 
         super(mainX, mainY, mainWidth, mainHeight, pageName);

@@ -12,17 +12,36 @@ public class MessageDisplay {
     }
 
     public int drawMessage(String message,
-                            Graphics gameGraphics,
-                            int fontSize,
-                            int messageX,
-                            int messageY,
-                            Color textColor) {
+                           Graphics gameGraphics,
+                           int fontSize,
+                           int messageX,
+                           int messageY,
+                           Color textColor) {
         Color savedColor = gameGraphics.getColor();
         gameGraphics.setColor(textColor);
         gameGraphics.setFont(new Font("Arial", fontSize, fontSize));
         FontMetrics fontMetrics = gameGraphics.getFontMetrics();
         int stringWidth = displayString(message, gameGraphics, fontMetrics, messageX, messageY);
         gameGraphics.setColor(savedColor);
+        return stringWidth;
+    }
+
+    public int drawMessage(String message,
+                           Graphics gameGraphics,
+                           int fontSize,
+                           int messageX,
+                           int messageY,
+                           Color textColor, boolean underlied) {
+        Color savedColor = gameGraphics.getColor();
+        gameGraphics.setColor(textColor);
+        gameGraphics.setFont(new Font("Arial", fontSize, fontSize));
+        FontMetrics fontMetrics = gameGraphics.getFontMetrics();
+        int stringWidth = displayString(message, gameGraphics, fontMetrics, messageX, messageY);
+        if (underlied) {
+            gameGraphics.drawLine(messageX, messageY + 2, messageX + stringWidth, messageY + 2);
+        }
+        gameGraphics.setColor(savedColor);
+
         return stringWidth;
     }
 

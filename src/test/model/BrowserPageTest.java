@@ -2,6 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ui.Constants;
 
 import java.io.IOException;
 
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BrowserPageTest {
     private HackingGame game;
     private BrowserPage browserPage;
+    private Constants constants;
 
 
     @BeforeEach
@@ -17,11 +19,13 @@ public class BrowserPageTest {
 
         game = new HackingGame();
         browserPage = game.getBrowserPage();
+        constants = new Constants();
 
     }
 
     @Test
     void testWebLinksInit() {
         assertFalse(browserPage.getWebLinks().isEmpty());
+
     }
 }

@@ -22,9 +22,22 @@ public class Constants {
     public static final String GAME_OVER_MESSAGE_3 = "fatal ER # 45337QW32Z_WS @%$$";
     public static final String GAME_OVER_MESSAGE_4 = "PRESS R TO REBOOT";
 
+
     public static final int NOTEPAD = 0;
     public static final int BROWSER = 1;
 
-    public static final String DEFAULT_INPUT_BROWSER = "http://dd7cb6400452a07c5d17619c84c.ann";
+    public static final String DEFAULT_INPUT_BROWSER = "http://dd7cb64-00452a07c5d-17619c-84c123kdf3.ann";
     public static final String DEFAULT_INPUT_NOTEPAD = "Enter note...";
+
+
+    public static final String HACK_SCREEN_1 = "YOU GOT HACKED";
+
+
+    public static final String HACK_SCREEN_2 = "Type in the code and hit Enter to block the hack";
+    public static final String HACK_SCREEN_3 = ">./K3RN3LC0MP1L3R";
+    public static final String HACK_SCREEN_4 = "Loading K3RN3LC0MP1L3R v1.337...";
+    public static final String HACK_SCREEN_5 = "Initializing...";
+    public static final String WEB_LINK = "WEB_LINK";
+    public static String BROKEN = "BROKEN";
+    public static String WORKING = "WORKING";
 }

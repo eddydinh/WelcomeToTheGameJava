@@ -1,10 +1,10 @@
 package ui;
 
 import interfaces.Clickable;
-import model.BrowserIcon;
+
 import model.HackingGame;
 import model.Icon;
-import model.NotePadIcon;
+
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
