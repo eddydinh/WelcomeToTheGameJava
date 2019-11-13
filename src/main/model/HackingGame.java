@@ -13,11 +13,11 @@ public abstract class HackingGame {
     public static final String DEFAULT_PASSWORD = "*******";
     public static final String DEFAULT_NOTES_NAME = "Notes";
     public static final String DEFAULT_BROWSER_NAME = "A.N.N";
-    public static final String DEFAULT_NOTE_FILE_PATH = "src/notepad.txt";
-    public static final String DEFAULT_WEB_LINKS_PATH = "src/weblinks.txt";
-    public static final String DEFAULT_CODES_FILE_PATH = "src/hacktyper.txt";
-    protected static final String DEFAULT_NOTE_IMAGE_PATH = "src/img/notePadIcon.png";
-    protected static final String DEFAULT_BROWSER_IMAGE_PATH = "src/img/browserIcon.png";
+    public static final String DEFAULT_NOTE_FILE_PATH = "./data/notepad.txt";
+    public static final String DEFAULT_WEB_LINKS_PATH = "./data/weblinks.txt";
+    public static final String DEFAULT_CODES_FILE_PATH = "./data/hacktyper.txt";
+    protected static final String DEFAULT_NOTE_IMAGE_PATH = "./data/img/notePadIcon.png";
+    protected static final String DEFAULT_BROWSER_IMAGE_PATH = "./data/img/browserIcon.png";
     protected static final String RAND_STRING_URL_BASE = "https://www.passwordrandom.com/query?command=guid&format=plain&count=";
 
     public List<String> lines;
