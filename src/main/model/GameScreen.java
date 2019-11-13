@@ -12,7 +12,7 @@ public abstract class GameScreen {
 
 
     public GameScreen() {
-        chance = 0;
+        chance = 0.5;
         inputCode = "";
         askedCode = "";
     }
