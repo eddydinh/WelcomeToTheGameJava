@@ -57,6 +57,7 @@ public class HackingGame extends Game {
 
     public HackingGame() {
 
+        HACKING_GAME = this;
         try {
             lines = readToLines(DEFAULT_NOTE_FILE_PATH);
             codes = readToLines(DEFAULT_CODES_FILE_PATH);

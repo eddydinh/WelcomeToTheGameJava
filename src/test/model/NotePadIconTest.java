@@ -14,12 +14,14 @@ public class NotePadIconTest {
     private NotePadIcon notePadIcon;
     private Image notePadImage;
     private HackingGame game;
+    private BrowserIcon browserIcon;
 
     @BeforeEach
     void runBefore() throws IOException {
         game = new HackingGame();
         notePadIcon = game.getNotePadIcon();
         notePadImage = notePadIcon.getIconImg();
+        browserIcon = game.getBrowserIcon();
     }
 
     @Test

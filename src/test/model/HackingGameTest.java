@@ -28,6 +28,7 @@ class HackingGameTest {
         assertFalse(game.isOver());
         assertTrue(game.isLogIn());
         assertEquals(game.DEFAULT_PASSWORD, game.getPassword());
+        assertEquals(HackingGame.getInstance(), game);
 
     }
 
@@ -93,8 +94,28 @@ class HackingGameTest {
 
         assertFalse(game.isLogIn());
         assertFalse(game.isOver());
+        assertTrue(game.isPlayed());
 
 
+    }
+
+    @Test
+    void testUpdate() {
+        game.update(game.GAME_IS_PLAYED);
+
+        assertTrue(game.isPlayed());
+
+        game.update(game.GAME_OVER);
+
+        assertTrue(game.isOver());
+
+        game.update(game.GAME_LOG_IN);
+
+        assertTrue(game.isLogIn());
+
+        game.update(game.HACK_SCREEN);
+
+        assertTrue(game.getHackScreen().askedCode.length() > 0);
     }
 
     @Test
@@ -238,6 +259,79 @@ class HackingGameTest {
         assertFalse(game.isLogIn());
 
 
+    }
+
+    @Test
+    void testKeyTyped() {
+        game.setState(game.GAME_IS_PLAYED);
+
+        game.setState(game.GAME_IS_PLAYED);
+        NotePadPage notePadPage = game.getNotePadPage();
+
+        //When input dialog box is active
+        notePadPage.setInputHasCursor(true);
+        notePadPage.setInputContent("");
+
+
+        game.keyPressed(KeyEvent.VK_ENTER);
+        game.keyPressed(KeyEvent.VK_BACK_SPACE);
+        assertEquals("", notePadPage.getInputContent());
+
+        game.keyTyped(KeyEvent.VK_SPACE, ' ');
+        assertEquals(" ", notePadPage.getInputContent());
+
+        game.keyTyped(KeyEvent.VK_A, 'a');
+        game.keyTyped(KeyEvent.VK_1, '1');
+        assertEquals(" a1", notePadPage.getInputContent());
+
+        String str = " a1";
+        for (int i = 0; i < 47; i++) {
+            game.keyTyped(KeyEvent.VK_C, 'c');
+            str += "c";
+        }
+        assertEquals(str, notePadPage.getInputContent());
+
+        game.keyTyped(KeyEvent.VK_SPACE, ' ');
+        game.keyTyped(KeyEvent.VK_A, 'a');
+        assertEquals(str, notePadPage.getInputContent());
+
+        game.keyTyped(KeyEvent.VK_BACK_SPACE, (char) 8);
+        game.keyTyped(KeyEvent.VK_BACK_SPACE, (char) 8);
+        str = str.substring(0, str.length() - 2);
+        assertEquals(str, notePadPage.getInputContent());
+
+        game.keyTyped(KeyEvent.VK_ENTER, (char) KeyEvent.VK_ENTER);
+        assertEquals("", notePadPage.getInputContent());
+
+        HackScreen hackScreen = game.getHackScreen();
+        game.setState(game.HACK_SCREEN);
+        game.keyTyped(KeyEvent.VK_SPACE, ' ');
+        assertEquals(" ", hackScreen.inputCode);
+
+        game.keyTyped(KeyEvent.VK_A, 'a');
+        game.keyTyped(KeyEvent.VK_1, '1');
+        assertEquals(" a1", hackScreen.inputCode);
+
+        str = " a1";
+        for (int i = 0; i < 47; i++) {
+            game.keyTyped(KeyEvent.VK_C, 'c');
+            str += "c";
+        }
+        assertEquals(str, hackScreen.inputCode);
+
+        game.keyTyped(KeyEvent.VK_A, 'a');
+        str = str + 'a';
+        assertEquals(str, hackScreen.inputCode);
+
+        game.keyTyped(KeyEvent.VK_BACK_SPACE, (char) 8);
+        game.keyTyped(KeyEvent.VK_BACK_SPACE, (char) 8);
+        str = str.substring(0, str.length() - 2);
+        assertEquals(str, hackScreen.inputCode);
+
+        hackScreen.askedCode = str;
+        game.keyTyped(KeyEvent.VK_ENTER, (char) KeyEvent.VK_ENTER);
+        assertEquals("", hackScreen.inputCode);
+        assertTrue(game.isPlayed());
 
     }
 

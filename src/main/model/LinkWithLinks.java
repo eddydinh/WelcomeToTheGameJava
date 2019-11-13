@@ -15,6 +15,8 @@ public class LinkWithLinks extends WebLink {
     private List<WebLink> links = new ArrayList<>();
 
     public void addLinks(WebLink l) {
-        links.add(l);
+        if (!links.contains(l)) {
+            links.add(l);
+        }
     }
 }

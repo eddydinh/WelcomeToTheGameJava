@@ -21,10 +21,57 @@ public class GameScreenTest {
 
 
     @Test
-    void testInit(){
+    void testInit() {
         assertEquals(0.5, hackScreen.chance);
-        assertEquals("",hackScreen.inputCode);
-        assertEquals("",hackScreen.askedCode);
+        assertEquals("", hackScreen.inputCode);
+        assertEquals("", hackScreen.askedCode);
+    }
+
+    @Test
+    void testNotifyObservers() {
+        game.setState(game.GAME_IS_PLAYED);
+        hackScreen.chance = 1;
+        hackScreen.notifyObservers(game.HACK_SCREEN);
+
+
+        assertEquals(game.HACK_SCREEN, game.getState());
+
+        game.setState(game.GAME_IS_PLAYED);
+        hackScreen.chance = 0;
+        hackScreen.notifyObservers(game.HACK_SCREEN);
+
+
+        assertEquals(game.GAME_IS_PLAYED, game.getState());
+
+        game.setState(game.HACK_SCREEN);
+        hackScreen.chance = 1;
+        hackScreen.notifyObservers(game.GAME_IS_PLAYED);
+
+
+        assertEquals(game.GAME_IS_PLAYED, game.getState());
+
+        game.setState(game.HACK_SCREEN);
+        hackScreen.chance = 0;
+        hackScreen.notifyObservers(game.GAME_IS_PLAYED);
+
+
+        assertEquals(game.GAME_IS_PLAYED, game.getState());
+
+        game.setState(game.HACK_SCREEN);
+        hackScreen.notifyObservers(game.GAME_OVER);
+
+        assertEquals(game.GAME_OVER, game.getState());
+
+        game.setState(game.GAME_IS_PLAYED);
+        hackScreen.notifyObservers(game.GAME_OVER);
+
+        assertEquals(game.GAME_IS_PLAYED, game.getState());
+
+
+
+
+
+
     }
 
 }
