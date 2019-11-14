@@ -75,47 +75,14 @@ public class ConcreteHackingGame extends HackingGame {
             notePadIcon.setPage(notePadPage);
             browserIcon = new BrowserIcon(50, 200, 80, 90, DEFAULT_BROWSER_NAME, browserImage);
             browserPage = new BrowserPage(475, 100, 1000, 900, DEFAULT_BROWSER_NAME);
-            generateWebLinks(browserPage);
             browserIcon.setPage(browserPage);
             hackScreen = new HackScreen();
             hackScreen.addObserver(this);
 
-        }
-
-
-    }
-
-    private void generateWebLinks(BrowserPage browserPage) {
-
-        List<String> webNamesArray = new ArrayList<>();
-        try {
-            webNamesArray = readToLines(DEFAULT_WEB_LINKS_PATH);
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-        GetRandomStringAPI randomStringAPI = new GetRandomStringAPI(RAND_STRING_URL_BASE,
-                webNamesArray.size());
-        List<String> webLinksArray = randomStringAPI.getRandomStringArray();
-        for (int i = 0; i < webNamesArray.size(); i++) {
-
-            makeWebLink(webNamesArray, i, webLinksArray);
-        }
-
-
-    }
-
-    private void makeWebLink(List<String> webNamesArray, int i, List<String> webLinksArray) {
-        String webName = webNamesArray.get(i);
-        double d = Math.random();
-        webNames.add(webName);
-        WebLink link = null;
-        if (d < 0.5) {
-            link = new BrokenWebLink(webName, "http://" + webLinksArray.get(i) + ".ann");
-        } else {
-            link = new LinkWithLinks(webName, "http://" + webLinksArray.get(i) + ".ann");
 
         }
-        browserPage.addWebLink(link);
+
+
     }
 
 

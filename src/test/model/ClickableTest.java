@@ -28,7 +28,7 @@ public class ClickableTest {
 
     @BeforeEach
     void runBefore() {
-        Image notePadImage = getImage("src/img/notePadIcon.png");
+        Image notePadImage = getImage("./data/img/notePadIcon.png");
         notePad = new NotePadIcon(50, 50, 80, 90, "Notes", notePadImage);
     }
 

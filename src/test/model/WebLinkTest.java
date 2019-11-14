@@ -36,6 +36,13 @@ public class WebLinkTest {
     }
 
     @Test
+    void testBrokenLink(){
+        WebLink brokenLink = new BrokenWebLink("test","test");
+        assertEquals("test", brokenLink.getWebName());
+        assertEquals("test", brokenLink.getWebLink());
+    }
+
+    @Test
     void testAddLink(){
         WebLink webLink1 = new WebLink("testWeb", "http://test1.ann");
         WebLink webLink2 = new WebLink("testWeb", "http://test1.ann");

@@ -18,7 +18,7 @@ public abstract class HackingGame {
     public static final String DEFAULT_CODES_FILE_PATH = "./data/hacktyper.txt";
     protected static final String DEFAULT_NOTE_IMAGE_PATH = "./data/img/notePadIcon.png";
     protected static final String DEFAULT_BROWSER_IMAGE_PATH = "./data/img/browserIcon.png";
-    protected static final String RAND_STRING_URL_BASE = "https://www.passwordrandom.com/query?command=guid&format=plain&count=";
+    public static final String RAND_STRING_URL_BASE = "https://www.passwordrandom.com/query?command=guid&format=plain&count=";
 
     public List<String> lines;
 

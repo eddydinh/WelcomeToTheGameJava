@@ -10,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NotePadPageTest {
     private ConcreteHackingGame game;
-    private NotePadPage notePadPage;
+    private Page notePadPage;
     private Constants constants;
 
     @BeforeEach
-    void runBefore() throws IOException {
+    void runBefore() {
 
         game = new ConcreteHackingGame();
         notePadPage = game.getNotePadPage();

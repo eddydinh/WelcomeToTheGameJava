@@ -25,7 +25,10 @@ public class BrowserPageTest {
 
     @Test
     void testWebLinksInit() {
-        assertFalse(browserPage.getWebLinks().isEmpty());
-
+        assertTrue(browserPage.getWebLinks().isEmpty());
+        browserPage.addWebLink(new WebLink("test","test"));
+        browserPage.addWebLink(new WebLink("test","test"));
+        assertEquals(1, browserPage.getWebLinks().size());
     }
+
 }

@@ -9,6 +9,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import model.ConcreteHackingGame;
+import network.GetRandomStringAPI;
 
 
 public class HackingGameFrame extends JFrame {
@@ -23,8 +24,9 @@ public class HackingGameFrame extends JFrame {
         super("WELCOME TO THE GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
-        theGame = ConcreteHackingGame.getInstance();
+        theGame = new ConcreteHackingGame();
         uiPanel = new UiPanel(theGame);
+        new GetRandomStringAPI();
         flashCursorDisplay = new FlashCursorDisplay();
         uiPanel.setLayout(null);
         add(uiPanel);
