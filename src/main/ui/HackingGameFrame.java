@@ -9,19 +9,32 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import model.ConcreteHackingGame;
+import model.GameTimer;
 import network.GetRandomStringAPI;
 
 
 public class HackingGameFrame extends JFrame {
     private static final int INTERVAL = 20;
     private static final int INTERVAL_FLASH = 500;
-    private static final int INTERVAL_INITIALIZE = 10000;
+    private static final int INTERVAL_INITIALIZE = 20000;
+    private static final int INTERVAL_DURING = 100;
+    private static final int INTERVAL_DESKTOP = 5000;
     private UiPanel uiPanel;
     private ConcreteHackingGame theGame;
     private FlashCursorDisplay flashCursorDisplay;
+    private static HackingGameFrame HACKING_GAME_FRAME;
+
+    public static HackingGameFrame getInstance() {
+        if (HACKING_GAME_FRAME == null) {
+            HACKING_GAME_FRAME = new HackingGameFrame();
+        }
+        return HACKING_GAME_FRAME;
+    }
 
     HackingGameFrame() {
+
         super("WELCOME TO THE GAME");
+        HACKING_GAME_FRAME = this;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
         theGame = new ConcreteHackingGame();
@@ -37,6 +50,8 @@ public class HackingGameFrame extends JFrame {
         addTimer();
         addTimerFlash();
         addTimerInitializeHackScreen();
+        addTimerDuringHackScreen();
+        addTimerDesktop();
 
 
     }
@@ -51,6 +66,23 @@ public class HackingGameFrame extends JFrame {
             public void actionPerformed(ActionEvent ae) {
 
                 uiPanel.repaint();
+            }
+        });
+        t.start();
+    }
+
+    // Set up timer
+    // MODIFIES: none
+    // EFFECTS: initializes a timer that updates game each
+    // INTERVAL milliseconds
+    private void addTimerDesktop() {
+        Timer t = new Timer(INTERVAL_DESKTOP, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (theGame.getState() == theGame.GAME_IS_PLAYED) {
+                    GameTimer.updateTime();
+                }
+
             }
         });
         t.start();
@@ -80,8 +112,26 @@ public class HackingGameFrame extends JFrame {
         Timer t = new Timer(INTERVAL_INITIALIZE, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                if (theGame.isPlayed()) {
+                    theGame.getHackScreen().notifyObservers(theGame.HACK_SCREEN);
+                }
+            }
+        });
+        t.start();
+    }
 
-                theGame.getHackScreen().notifyObservers(theGame.HACK_SCREEN);
+
+    //Set up timer for flash
+    //MODIFIES: UiPanel.flash
+    //EFFECTS: invert UiPanel's flash boolean variable, make cursor flash
+    //INTERVAL milliseconds
+    private void addTimerDuringHackScreen() {
+        Timer t = new Timer(INTERVAL_DURING, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (theGame.getState() == theGame.HACK_SCREEN) {
+                    GameTimer.updateHackScreenTimer();
+                }
             }
         });
         t.start();
@@ -108,7 +158,7 @@ public class HackingGameFrame extends JFrame {
 
         @Override
         public void keyTyped(KeyEvent e) {
-            int keyCode = (int) e.getKeyChar();
+            int keyCode = e.getKeyChar();
             char keyChar = e.getKeyChar();
             theGame.keyTyped(keyCode, keyChar);
         }

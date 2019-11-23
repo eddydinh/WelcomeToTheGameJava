@@ -37,6 +37,8 @@ public abstract class Page implements Draggable {
     public String mainPageState;
     public static String HOME = "HOME";
 
+    private boolean isMouseOverCloseBtn = false;
+
     public String getPageName() {
         return pageName;
     }
@@ -274,10 +276,18 @@ public abstract class Page implements Draggable {
 
     public abstract void setUpPage();
 
+    public void setMouseOverCloseBtn(boolean mouseOverCloseBtn) {
+        isMouseOverCloseBtn = mouseOverCloseBtn;
+    }
+
     public void setIcon(Icon theIcon) {
         if (icon != theIcon) {
             icon = theIcon;
             icon.setPage(this);
         }
+    }
+
+    public boolean getIsMouseOverHomeButton() {
+        return isMouseOverCloseBtn;
     }
 }

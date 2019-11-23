@@ -26,11 +26,13 @@ public class UiPanel extends JPanel {
     private RectDisplay rectDisplay;
     private FlashCursorDisplay flashCursorDisplay;
 
+    public static final int CODE_BOX_WIDTH = 600;
 
     public UiPanel(ConcreteHackingGame theGame) {
 
         constants = new Constants();
         flashCursorDisplay = new FlashCursorDisplay();
+
 
         List<Icon> icons = new ArrayList<Icon>();
         //Orders matter
@@ -59,18 +61,22 @@ public class UiPanel extends JPanel {
 
             @Override
             public void mouseMoved(MouseEvent event) {
-
-                if (
-                        iconDisplay.validateMouse(event, constants.NOTEPAD)
-                                || iconDisplay.validateMouse(event, constants.BROWSER)
-                                || pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.NOTEPAD)
-                                || pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.BROWSER)
-                                || pageDisplay.validateMouse(event, constants.WEB_LINK, constants.BROWSER)) {
-                    setCursor(new Cursor(Cursor.HAND_CURSOR));
-                } else if (pageDisplay.validateMouse(event, constants.PAGE_INPUT, constants.NOTEPAD)) {
-                    setCursor(new Cursor(Cursor.TEXT_CURSOR));
-                } else {
-                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                theGame.getBrowserPage().setMouseOverCloseBtn(false);
+                if (theGame.isPlayed()) {
+                    if (
+                            (iconDisplay.validateMouse(event, constants.NOTEPAD)
+                                    || iconDisplay.validateMouse(event, constants.BROWSER)
+                                    || pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.NOTEPAD)
+                                    || pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.BROWSER)
+                                    || pageDisplay.validateMouse(event, constants.WEB_LINK, constants.BROWSER)
+                                    || pageDisplay.validateMouse(event, constants.HOME_BTN, constants.BROWSER)
+                                    || pageDisplay.validateArrowBack(event) || pageDisplay.validateArrowFront(event))) {
+                        setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    } else if (pageDisplay.validateMouse(event, constants.PAGE_INPUT, constants.NOTEPAD)) {
+                        setCursor(new Cursor(Cursor.TEXT_CURSOR));
+                    } else {
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
                 }
 
             }
@@ -81,11 +87,13 @@ public class UiPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
-                if (pageDisplay.validateMouse(event, constants.PAGE_NAVBAR, constants.NOTEPAD)) {
+                if (theGame.isPlayed()) {
+                    if (pageDisplay.validateMouse(event, constants.PAGE_NAVBAR, constants.NOTEPAD)) {
 
-                    onMousePressedPage(constants.NOTEPAD);
-                } else if (pageDisplay.validateMouse(event, constants.PAGE_NAVBAR, constants.BROWSER)) {
-                    onMousePressedPage(constants.BROWSER);
+                        onMousePressedPage(constants.NOTEPAD);
+                    } else if (pageDisplay.validateMouse(event, constants.PAGE_NAVBAR, constants.BROWSER)) {
+                        onMousePressedPage(constants.BROWSER);
+                    }
                 }
 
             }
@@ -93,12 +101,14 @@ public class UiPanel extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent event) {
-                resetInput();
-                if (event.getClickCount() == 2) {
-                    validateMouseOnDoubleClicked(event);
-                } else if (event.getClickCount() == 1) {
-                    checkMouseClicks(event);
+                if (theGame.isPlayed()) {
+                    resetInput();
+                    if (event.getClickCount() == 2) {
+                        validateMouseOnDoubleClicked(event);
+                    } else if (event.getClickCount() == 1) {
+                        checkMouseClicks(event);
 
+                    }
                 }
             }
         });
@@ -114,13 +124,15 @@ public class UiPanel extends JPanel {
         } else if (pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.NOTEPAD)) {
             iconDisplay.onMouseClickedPageCloseBtn(constants.NOTEPAD);
         } else if (pageDisplay.validateMouse(event, constants.PAGE_CLOSE_BTN, constants.BROWSER)) {
-            theGame.getBrowserPage().mainPageState = theGame.getBrowserPage().HOME;
             iconDisplay.onMouseClickedPageCloseBtn(constants.BROWSER);
         } else if (pageDisplay.validateMouse(event, constants.PAGE_INPUT, constants.NOTEPAD)) {
             pageDisplay.onMouseClickedPageInput(constants.NOTEPAD);
-        } else if (pageDisplay.validateMouse(event, constants.WEB_LINK, constants.BROWSER)) {
-            return;
         }
+        pageDisplay.validateMouse(event, constants.WEB_LINK, constants.BROWSER);
+        pageDisplay.validateMouse(event, constants.HOME_BTN, constants.BROWSER);
+        pageDisplay.validateArrowBack(event);
+        pageDisplay.validateArrowFront(event);
+
     }
 
     private void validateMouseOnDoubleClicked(MouseEvent event) {
@@ -135,13 +147,10 @@ public class UiPanel extends JPanel {
     private void resetInput() {
 
         pageDisplay.getPage(constants.NOTEPAD).setInputContent(constants.DEFAULT_INPUT_NOTEPAD);
-        pageDisplay.getPage(constants.BROWSER).setInputContent(constants.DEFAULT_INPUT_BROWSER);
 
-        pageDisplay.getPage(constants.BROWSER).setInputTextColor(new Color(173, 173, 173));
         pageDisplay.getPage(constants.NOTEPAD).setInputTextColor(new Color(173, 173, 173));
 
         pageDisplay.getPage(constants.NOTEPAD).setInputHasCursor(false);
-        pageDisplay.getPage(constants.BROWSER).setInputHasCursor(false);
 
         iconDisplay.getIcon(constants.BROWSER).clickHandler(false);
         iconDisplay.getIcon(constants.NOTEPAD).clickHandler(false);
@@ -182,23 +191,54 @@ public class UiPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics gameGraphics) {
         super.paintComponent(gameGraphics);
-
         if (theGame.isLogIn()) {
             displayLogInScreen(gameGraphics);
-        } else if (theGame.isOver()) {
-            displayGameOverScreen(gameGraphics);
+        } else if (theGame.getState() == theGame.HACK_SCREEN) {
+            displayHackScreen(gameGraphics);
         } else if (theGame.isPlayed()) {
             displayGameScreen(gameGraphics);
+        } else if (theGame.isOver()) {
+            displayGameOverScreen(gameGraphics);
+        } else if (theGame.getState() == theGame.WIN) {
+            displayWinScreen(gameGraphics);
         } else {
-            displayHackScreen(gameGraphics);
+            displayLostScreen(gameGraphics);
         }
 
 
     }
 
+    private void displayLostScreen(Graphics gameGraphics) {
+        displayWinLostScreen(gameGraphics,
+                "YOU LOST", "YOU RAN OUT OF TIME", "PRESS Q TO QUIT",
+                new Color(255, 0, 0));
+    }
+
+    private void displayWinScreen(Graphics gameGraphics) {
+        displayWinLostScreen(gameGraphics, "YOU WON", "ALL SECRET KEYS ARE FOUND",
+                "PRESS Q TO QUIT",
+                new Color(0, 255, 0));
+    }
+
+    private void displayWinLostScreen(Graphics gameGraphics,
+                                      String string1, String string2, String string3, Color color) {
+        Color savedColor = gameGraphics.getColor();
+        Color messageTextColor = color;
+        drawMessage(string1, gameGraphics, 50, 0, centerY - 150, messageTextColor);
+        drawMessage(string2, gameGraphics, 25, 0, centerY - 100, messageTextColor);
+        drawMessage(string3,
+                gameGraphics, 25, 0, centerY - 50, messageTextColor);
+        gameGraphics.setColor(new Color(0, 255, 0));
+        gameGraphics.setColor(savedColor);
+    }
+
     private void displayHackScreen(Graphics gameGraphics) {
         Color savedColor = gameGraphics.getColor();
         Color messageTextColor = new Color(0, 215, 0);
+        if (GameTimer.hackScreenTimer <= CODE_BOX_WIDTH * 1 / 3) {
+            messageTextColor = new Color(255, 0, 0);
+            gameGraphics.setColor(messageTextColor);
+        }
         drawMessage(constants.HACK_SCREEN_1, gameGraphics, 50, 0, centerY - 250, messageTextColor);
         drawMessage(constants.HACK_SCREEN_2, gameGraphics, 25, 0, centerY - 150, messageTextColor);
         drawMessage(constants.HACK_SCREEN_3, gameGraphics, 10, 0, centerY - 100, messageTextColor);
@@ -206,15 +246,16 @@ public class UiPanel extends JPanel {
                 gameGraphics, 10, 0, centerY - 50, messageTextColor);
         drawMessage(constants.HACK_SCREEN_5,
                 gameGraphics, 10, 0, centerY, messageTextColor);
-        drawCodes(gameGraphics);
+        drawCodes(gameGraphics, messageTextColor);
         gameGraphics.setColor(savedColor);
     }
 
-    private void drawCodes(Graphics gameGraphics) {
+    private void drawCodes(Graphics gameGraphics, Color messageTextColor) {
         Color savedColor = gameGraphics.getColor();
-        Color messageTextColor = new Color(0, 215, 0);
         gameGraphics.setColor(messageTextColor);
-        gameGraphics.drawRect((theGame.WIDTH / 2) - 300, centerY + 50, 600, 50);
+
+        gameGraphics.fillRect((theGame.WIDTH / 2) - 300, centerY + 30, GameTimer.hackScreenTimer, 10);
+        gameGraphics.drawRect((theGame.WIDTH / 2) - 300, centerY + 50, CODE_BOX_WIDTH, 50);
         drawRect(gameGraphics, new Color(42, 42, 43), (theGame.WIDTH / 2) - 298, centerY + 52, 50, 48);
         drawMessage("1", gameGraphics, 30, (theGame.WIDTH / 2) - 280, centerY + 85, Color.WHITE);
         drawMessage(theGame.getHackScreen().askedCode, gameGraphics, 15,
@@ -246,9 +287,12 @@ public class UiPanel extends JPanel {
                 gameGraphics, 10, 0, centerY - 50, messageTextColor);
         drawMessage(constants.GAME_OVER_MESSAGE_3,
                 gameGraphics, 10, 0, centerY, messageTextColor);
-        int stringWidth = drawMessage(
+        drawMessage(
+                constants.PENALTY_STRING,
+                gameGraphics, 20, 0, centerY + 50, messageTextColor);
+        drawMessage(
                 constants.GAME_OVER_MESSAGE_4,
-                gameGraphics, 25, 0, centerY + 50, messageTextColor);
+                gameGraphics, 25, 0, centerY + 100, messageTextColor);
         gameGraphics.setColor(new Color(255, 255, 255));
         gameGraphics.setColor(savedColor);
 
@@ -259,8 +303,7 @@ public class UiPanel extends JPanel {
     // MODIFIES: gameGraphics
     // EFFECTS:  draws the game onto gameGraphics
     private void displayGameScreen(Graphics gameGraphics) {
-        drawRect(gameGraphics,
-                new Color(78, 78, 78), 0, 0, theGame.WIDTH, constants.NAV_BAR_LENGTH);
+        drawTopNav(gameGraphics);
         drawRect(gameGraphics,
                 new Color(56, 91, 110), 0, 30, theGame.WIDTH, theGame.LENGTH);
         iconDisplay.drawIcon(gameGraphics);
@@ -270,6 +313,29 @@ public class UiPanel extends JPanel {
         if (iconDisplay.getIcon(constants.BROWSER).isDoubleClicked()) {
             pageDisplay.drawPage(gameGraphics, constants.BROWSER);
         }
+
+    }
+
+    private void drawTopNav(Graphics gameGraphics) {
+        Color rectColor = new Color(78, 78, 78);
+        drawRect(gameGraphics,
+                rectColor, 0, 0, theGame.WIDTH, constants.NAV_BAR_LENGTH);
+        Color textColor = new Color(255, 255, 255);
+        if (GameTimer.day > GameTimer.MAX_DAY * 2 / 3) {
+            textColor = new Color(255, 0, 0);
+        }
+        drawMessage("Day " + GameTimer.day, gameGraphics,
+                15, theGame.WIDTH - 200, constants.NAV_BAR_LENGTH * 2 / 3, textColor);
+        int desktopTime = GameTimer.desktopTimer;
+        String timeString = ":00 AM";
+        if (desktopTime > 12) {
+            desktopTime = desktopTime % 12;
+            timeString = ":00 PM";
+
+        }
+        drawMessage(desktopTime + timeString, gameGraphics,
+                15, theGame.WIDTH - 100, constants.NAV_BAR_LENGTH * 2 / 3, Color.WHITE);
+
 
     }
 

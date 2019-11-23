@@ -48,8 +48,8 @@ public class IconDisplay {
     }
 
     public void onMouseClickedPageCloseBtn(int index) {
-
         icons.get(index).doubleClickHandler(false);
+
     }
 
     public void onMouseDoubleClickedIcon(int idex) {

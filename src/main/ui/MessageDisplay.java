@@ -20,8 +20,8 @@ public class MessageDisplay {
         Color savedColor = gameGraphics.getColor();
         gameGraphics.setColor(textColor);
         gameGraphics.setFont(new Font("Arial", fontSize, fontSize));
-        FontMetrics fontMetrics = gameGraphics.getFontMetrics();
-        int stringWidth = displayString(message, gameGraphics, fontMetrics, messageX, messageY);
+        int stringWidth = getStringWidth(message,gameGraphics,fontSize);
+        displayString(message, gameGraphics, stringWidth, messageX, messageY);
         gameGraphics.setColor(savedColor);
         return stringWidth;
     }
@@ -34,9 +34,8 @@ public class MessageDisplay {
                            Color textColor, boolean underlied) {
         Color savedColor = gameGraphics.getColor();
         gameGraphics.setColor(textColor);
-        gameGraphics.setFont(new Font("Arial", fontSize, fontSize));
-        FontMetrics fontMetrics = gameGraphics.getFontMetrics();
-        int stringWidth = displayString(message, gameGraphics, fontMetrics, messageX, messageY);
+        int stringWidth = getStringWidth(message, gameGraphics, fontSize);
+        displayString(message, gameGraphics, stringWidth, messageX, messageY);
         if (underlied) {
             gameGraphics.drawLine(messageX, messageY + 2, messageX + stringWidth, messageY + 2);
         }
@@ -45,16 +44,22 @@ public class MessageDisplay {
         return stringWidth;
     }
 
+    public int getStringWidth(String string, Graphics gameGraphics, int fontSize) {
+        gameGraphics.setFont(new Font("Arial", fontSize, fontSize));
+        FontMetrics fontMetrics = gameGraphics.getFontMetrics();
+        return fontMetrics.stringWidth(string);
+    }
+
+
     // Centres a string on the screen
     // MODIFIES: gameGraphics
     // EFFECTS:  display the string str horizontally onto g at vertical position y
-    private int displayString(String string, Graphics gameGraphics, FontMetrics fontMetrics, int stringX, int stringY) {
-        int stringWidth = fontMetrics.stringWidth(string);
+    private void displayString(String string, Graphics gameGraphics, int stringWidth, int stringX, int stringY) {
+
         if (stringX == 0) {
             gameGraphics.drawString(string, (theGame.WIDTH - stringWidth) / 2, stringY);
         } else {
             gameGraphics.drawString(string, stringX, stringY);
         }
-        return stringWidth;
     }
 }

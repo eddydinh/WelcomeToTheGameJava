@@ -116,6 +116,10 @@ class ConcreteHackingGameTest {
         game.update(game.HACK_SCREEN);
 
         assertTrue(game.getHackScreen().askedCode.length() > 0);
+
+        game.update(game.GAME_TRULY_OVER);
+
+        assertTrue(game.getState() == game.GAME_TRULY_OVER);
     }
 
     @Test

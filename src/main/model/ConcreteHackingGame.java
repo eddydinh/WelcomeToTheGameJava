@@ -1,8 +1,8 @@
 package model;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.Image;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,11 +10,12 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-
-import network.GetRandomStringAPI;
+import java.util.List;
 
 
 import ui.Constants;
+import ui.HackingGameFrame;
+import ui.UiPanel;
 
 
 /*
@@ -40,9 +41,13 @@ public class ConcreteHackingGame extends HackingGame {
 
     @Override
     public void update(String gameState) {
-        Random random = new Random();
-        randomInd = random.nextInt(codes.size() - 1);
-        hackScreen.askedCode = codes.get(randomInd);
+
+        if (gameState == HACK_SCREEN) {
+            Random random = new Random();
+            randomInd = random.nextInt(codes.size() - 1);
+            hackScreen.askedCode = codes.get(randomInd);
+            GameTimer.hackScreenTimer = UiPanel.CODE_BOX_WIDTH;
+        }
         setState(gameState);
     }
 
@@ -54,13 +59,21 @@ public class ConcreteHackingGame extends HackingGame {
     private String password;
     public List<String> webNames = new ArrayList<>();
     public List<String> codes = new ArrayList<>();
+    private int initialKeysLength;
+    public int count;
 
     public ConcreteHackingGame() {
 
         HACKING_GAME = this;
+
         try {
+
+            keys = readToLines(DEFAULT_KEYS_FILE_PATH);
+            initialKeysLength = keys.size();
+            resetNote();
             lines = readToLines(DEFAULT_NOTE_FILE_PATH);
             codes = readToLines(DEFAULT_CODES_FILE_PATH);
+
         } catch (IOException exception) {
             exception.printStackTrace();
         } finally {
@@ -92,7 +105,6 @@ public class ConcreteHackingGame extends HackingGame {
 
     }
 
-
     public Image getImage(String filePath) {
         try {
             File imageFile = new File(filePath);
@@ -103,6 +115,7 @@ public class ConcreteHackingGame extends HackingGame {
             return null;
         }
     }
+
 
     // EFFECTS: returns true if the game is over, false otherwise
     public boolean isOver() {
@@ -138,11 +151,20 @@ public class ConcreteHackingGame extends HackingGame {
                 validateKeyGameOver(keyCode);
                 break;
             default:
+                validateKeyGameWinLost(keyCode);
                 break;
 
         }
 
 
+    }
+
+    private void validateKeyGameWinLost(int keyCode) {
+        if (keyCode == KeyEvent.VK_Q) {
+            if (state == WIN || state == GAME_TRULY_OVER) {
+                HackingGameFrame.getInstance().dispose();
+            }
+        }
     }
 
 
@@ -175,21 +197,36 @@ public class ConcreteHackingGame extends HackingGame {
         Constants constants = new Constants();
         if (keyCode == KeyEvent.VK_R) {
             setPassword(DEFAULT_PASSWORD);
+            browserPage.mainPageState = browserPage.HOME;
             notePadPage.setInputContent(constants.DEFAULT_INPUT_NOTEPAD);
+            notePadPage.setInputTextColor(new Color(173, 173, 173));
+            notePadPage.setInputHasCursor(false);
+            hackScreen.inputCode = "";
             setState(GAME_LOG_IN);
+            GameTimer.hackScreenTimer = UiPanel.CODE_BOX_WIDTH;
         }
 
     }
 
 
     private void writeLineAndSaveNoteToFile() {
+        System.out.println(count);
         try {
-            writeToFile(DEFAULT_NOTE_FILE_PATH);
-        } catch (FileNotFoundException exception) {
-            exception.printStackTrace();
-        } finally {
+            if (keys.contains(notePadPage.getInputContent())) {
+                count++;
+                keys.remove(notePadPage.getInputContent());
+            }
+            if (count == initialKeysLength) {
+                this.update(WIN);
+
+            }
             lines.add(notePadPage.getInputContent());
             notePadPage.setInputContent("");
+            writeToFile(DEFAULT_NOTE_FILE_PATH);
+
+
+        } catch (FileNotFoundException exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -202,6 +239,18 @@ public class ConcreteHackingGame extends HackingGame {
         }
         writer.close();
 
+    }
+
+    public void resetNote() {
+        File file = new File(DEFAULT_NOTE_FILE_PATH);
+        try (PrintWriter writer = new PrintWriter(file)) {
+            writer.println("WELCOME TO THE GAME!");
+            writer.println("Use Anonymous Node Network (A.N.N) to find all " + initialKeysLength + " secret keys");
+            writer.println("Don't forget to save your key in Notes!");
+            writer.println("You have " + GameTimer.MAX_DAY + " days.");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     //Get password value
@@ -234,7 +283,7 @@ public class ConcreteHackingGame extends HackingGame {
     }
 
     private void validateKeyGameIsPlayed(int keyCode, char keyChar) {
-        if (notePadPage.inputHasCursor()) {
+        if (notePadPage.inputHasCursor() && isPlayed()) {
             if (notePadPage.getInputContent().length() < 50
                     && keyCode != KeyEvent.VK_ENTER && keyCode != KeyEvent.VK_BACK_SPACE) {
 

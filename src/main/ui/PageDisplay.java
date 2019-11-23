@@ -16,6 +16,10 @@ public class PageDisplay {
     private RectDisplay rectDisplay;
     private FlashCursorDisplay flashCursorDisplay;
     private List<WebLink> webLinks;
+    private BrowserPage browserPage;
+    private Image homeImage;
+    private Stack<WebLink> backwardStack;
+    private Stack<WebLink> forwardStack;
 
 
     PageDisplay(List<Page> pages, ConcreteHackingGame theGame) {
@@ -25,8 +29,11 @@ public class PageDisplay {
         constants = new Constants();
         rectDisplay = new RectDisplay();
         flashCursorDisplay = new FlashCursorDisplay();
-        BrowserPage browserPage = theGame.getBrowserPage();
+        browserPage = theGame.getBrowserPage();
         webLinks = new ArrayList<>();
+        homeImage = theGame.getImage("./data/img/homeBtn.PNG");
+        backwardStack = new Stack<>();
+        forwardStack = new Stack<>();
 
     }
 
@@ -43,29 +50,70 @@ public class PageDisplay {
         } else if (type == constants.PAGE_NAVBAR && pages.get(index).isMouseOverNavBar(mouseX, mouseY)) {
             return true;
         } else if (type == constants.WEB_LINK) {
-            return mouseIsOver(event, mouseX, mouseY);
+            return mouseIsOverLink(event, mouseX, mouseY);
+        } else if (type == constants.HOME_BTN) {
+            return mouseIsOverHomeBtn(event, mouseX, mouseY);
         }
 
         return false;
     }
 
-    private boolean mouseIsOver(MouseEvent e, double mouseX, double mouseY) {
-        for (WebLink link : this.webLinks) {
-            link.hasLine = false;
-            if (link.isMouseOverLink(mouseX, mouseY)) {
-                link.hasLine = true;
-                if (e.getClickCount() > 0) {
-                    if (link instanceof BrokenWebLink) {
-                        theGame.getBrowserPage().mainPageState = constants.BROKEN;
-                    } else {
-                        theGame.getBrowserPage().mainPageState = constants.WORKING;
-                        theGame.getBrowserPage().currentWeb = (LinkWithLinks) link;
-                    }
-                }
-                return true;
+    private boolean mouseIsOverHomeBtn(MouseEvent event, double mouseX, double mouseY) {
+        if (browserPage.isMouseOverHomeButton(mouseX, mouseY)) {
+            browserPage.setMouseOverCloseBtn(true);
+            if (event.getClickCount() > 0) {
+                browserPage.mainPageState = browserPage.HOME;
+                browserPage.setInputContent(constants.DEFAULT_INPUT_BROWSER);
+                browserPage.currentWeb = null;
+                forwardStack.clear();
+                backwardStack.clear();
             }
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean mouseIsOverLink(MouseEvent e, double mouseX, double mouseY) {
+        if (browserPage.mainPageState == constants.WORKING || browserPage.mainPageState == browserPage.HOME) {
+            for (WebLink link : this.webLinks) {
+                link.hasLine = false;
+                if (link.isMouseOverLink(mouseX, mouseY)) {
+                    link.hasLine = true;
+
+                    if (e.getClickCount() > 0) {
+                        onClick(link);
+                        browserPage.setInputContent(link.getWebLink());
+                    }
+                    return true;
+                }
+            }
+            return false;
         }
         return false;
+    }
+
+    private void onClick(WebLink link) {
+        stackOperationOnLinkClick(link);
+        if (link instanceof BrokenWebLink) {
+            browserPage.mainPageState = constants.BROKEN;
+            browserPage.currentWeb = link;
+        } else if (link instanceof LinkWithCode) {
+            browserPage.mainPageState = constants.CODE;
+            browserPage.currentWeb = link;
+        } else {
+            browserPage.mainPageState = constants.WORKING;
+            browserPage.currentWeb = link;
+        }
+    }
+
+    private void stackOperationOnLinkClick(WebLink link) {
+        forwardStack.clear();
+        if (browserPage.currentWeb != null) {
+            backwardStack.push(browserPage.currentWeb);
+        } else {
+            backwardStack.push(null);
+        }
     }
 
     public Page getPage(int index) {
@@ -137,19 +185,42 @@ public class PageDisplay {
         } else if (page.mainPageState == constants.BROKEN) {
             drawBrokenPage(gameGraphics);
         } else if (page.mainPageState == constants.WORKING) {
-            if (theGame.getBrowserPage().currentWeb.getLinks().size() < 25) {
+            if (((LinkWithLinks) browserPage.currentWeb).getLinks().size() < 25) {
                 populateLink(theGame.getBrowserPage().currentWeb);
             }
-            drawWorkingPage(gameGraphics, theGame.getBrowserPage().currentWeb);
+            drawWorkingPage(gameGraphics, browserPage.currentWeb);
+        } else {
+            drawPageWithCode(gameGraphics, browserPage.currentWeb);
         }
 
 
     }
 
+    private void drawPageWithCode(Graphics gameGraphics, WebLink currentWeb) {
+        LinkWithCode link = (LinkWithCode) currentWeb;
+        gameGraphics.drawImage(link.getLinkImg(),
+                browserPage.getMainPageX() + browserPage.getMainPageWidth() / 8,
+                browserPage.getMainPageY() + browserPage.getMainPageHeight() / 4 - 100, 800, 600, null);
+
+        messageDisplay.drawMessage("Secret Key: " + link.getKey(), gameGraphics, 20,
+                browserPage.getMainPageX() + browserPage.getMainPageWidth() / 2
+                        - messageDisplay.getStringWidth("Secret Key: " + link.getKey(), gameGraphics, 20) / 2,
+                browserPage.getMainPageY() + browserPage.getMainPageHeight() / 4 + 550, Color.BLACK);
+
+    }
+
     private void populateLink(WebLink currentWeb) {
-        ((LinkWithLinks) currentWeb)
-                .addLinks(webLinks
-                        .get(new Random().nextInt(webLinks.size() - 1)));
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i = 0; i < webLinks.size(); i++) {
+            list.add(new Integer(i));
+        }
+        Collections.shuffle(list);
+        for (int j = 0; j < 25; j++) {
+            ((LinkWithLinks) currentWeb)
+                    .addLinks(webLinks
+                            .get(list.get(j)));
+        }
+
 
     }
 
@@ -187,8 +258,14 @@ public class PageDisplay {
     }
 
     private void drawInput(Graphics gameGraphics, Page page) {
+        Color color = new Color(0, 0, 0);
+        if (page instanceof BrowserPage) {
+            drawBrowserInputItems(gameGraphics);
+            color = new Color(196, 198, 192);
+        }
+
         rectDisplay.drawRect(gameGraphics,
-                new Color(0, 0, 0),
+                color,
                 page.getInputX(),
                 page.getInputY(),
                 page.getInputWidth(),
@@ -200,6 +277,82 @@ public class PageDisplay {
                 page.getInputWidth() - 2,
                 page.getInputHeight() - 2);
 
+
+    }
+
+    private void drawBrowserInputItems(Graphics gameGraphics) {
+
+        rectDisplay.drawRect(gameGraphics,
+                new Color(223, 225, 220),
+                browserPage.getMainPageX(),
+                browserPage.getMainPageY(),
+                browserPage.getNavBarWidth(),
+                browserPage.getNavBarHeight() + 10);
+        drawLine(gameGraphics, new Color(193, 196, 190),
+                browserPage.getMainPageX(), browserPage.getMainPageY() + 10,
+                browserPage.getMainPageX() + browserPage.getMainPageWidth(),
+                browserPage.getMainPageY() + 10);
+        drawLine(gameGraphics, new Color(183, 186, 180),
+                browserPage.getMainPageX(),
+                browserPage.getMainPageY() + browserPage.getNavBarHeight() + 10,
+                browserPage.getMainPageX() + browserPage.getMainPageWidth(),
+                browserPage.getMainPageY() + browserPage.getNavBarHeight() + 10);
+        drawHomeBtn(gameGraphics);
+        drawForwardArrow(gameGraphics);
+        drawBackwardArrow(gameGraphics);
+    }
+
+    private void drawBackwardArrow(Graphics gameGraphics) {
+        Graphics2D g2 = (Graphics2D) gameGraphics;
+        Stroke currentStroke = g2.getStroke();
+        Color currentColor = g2.getColor();
+        g2.setStroke(new BasicStroke(4));
+        if (backwardStack.isEmpty()) {
+            g2.setColor(new Color(189, 189, 189));
+        }
+        int y = (browserPage.getHomeBtnY() + browserPage.getHomeBtnHeight() / 2);
+        int x1 = browserPage.getHomeBtnX() + browserPage.getHomeBtnWidth() + 30;
+        int x2 = browserPage.getHomeBtnX() + browserPage.getHomeBtnWidth() + 50;
+        g2.drawLine(x1, y, x2, y);
+        int xarrow2 = x1 + (x2 - x1) / 2;
+        int upArrow = browserPage.getHomeBtnY() + 5;
+        int downArrow = browserPage.getHomeBtnY() + browserPage.getHomeBtnHeight() - 5;
+        g2.drawLine(x1 - 3, y, xarrow2, upArrow);
+        g2.drawLine(x1 - 3, y, xarrow2, downArrow);
+        g2.setStroke(currentStroke);
+        g2.setColor(currentColor);
+    }
+
+    private void drawForwardArrow(Graphics gameGraphics) {
+        Graphics2D g2 = (Graphics2D) gameGraphics;
+        Stroke currentStroke = g2.getStroke();
+        Color currentColor = g2.getColor();
+        g2.setStroke(new BasicStroke(4));
+        if (forwardStack.isEmpty()) {
+            g2.setColor(new Color(189, 189, 189));
+        }
+        int y = (browserPage.getHomeBtnY() + browserPage.getHomeBtnHeight() / 2);
+        int x1 = browserPage.getHomeBtnX() + browserPage.getHomeBtnWidth() + 80;
+        int x2 = browserPage.getHomeBtnX() + browserPage.getHomeBtnWidth() + 100;
+        g2.drawLine(x1, y, x2, y);
+        int xarrow2 = x1 + (x2 - x1) / 2;
+        int upArrow = browserPage.getHomeBtnY() + 5;
+        int downArrow = browserPage.getHomeBtnY() + browserPage.getHomeBtnHeight() - 5;
+        g2.drawLine(x2 + 3, y, xarrow2, upArrow);
+        g2.drawLine(x2 + 3, y, xarrow2, downArrow);
+        g2.setStroke(currentStroke);
+        g2.setColor(currentColor);
+
+    }
+
+    private void drawHomeBtn(Graphics gameGraphics) {
+        if (browserPage.getIsMouseOverHomeButton()) {
+            gameGraphics.drawImage(homeImage, browserPage.getHomeBtnX(), browserPage.getHomeBtnY(),
+                    browserPage.getHomeBtnWidth(), browserPage.getHomeBtnHeight(), new Color(135, 135, 135), null);
+        } else {
+            gameGraphics.drawImage(homeImage, browserPage.getHomeBtnX(), browserPage.getHomeBtnY(),
+                    browserPage.getHomeBtnWidth(), browserPage.getHomeBtnHeight(), null);
+        }
     }
 
     private void drawCloseBtn(Graphics gameGraphics, Page page) {
@@ -261,7 +414,7 @@ public class PageDisplay {
         int i = 0;
         while (y <= browserPage.getMainPageY() + browserPage.getMainPageHeight()) {
             String name = webNames.get(i);
-            WebLink link = (WebLink) webLinks.get(name);
+            WebLink link = webLinks.get(name);
             int contentWidth = messageDisplay.drawMessage(name + " - " + link.toString(),
                     gameGraphics, 15, x, y, Color.BLUE, link.hasLine);
             setUpLink(link, x, y, linkMarginBottom, contentWidth);
@@ -343,4 +496,81 @@ public class PageDisplay {
     }
 
 
+    public boolean validateArrowBack(MouseEvent event) {
+        if (!backwardStack.isEmpty()) {
+            Point point = event.getPoint();
+            double mouseX = point.getX();
+            double mouseY = point.getY();
+            int x1Back = browserPage.getHomeBtnX() + browserPage.getHomeBtnWidth() + 30;
+            int x2Back = browserPage.getHomeBtnX() + browserPage.getHomeBtnWidth() + 50;
+            int upArrow = browserPage.getHomeBtnY() + 5;
+            int downArrow = browserPage.getHomeBtnY() + browserPage.getHomeBtnHeight() - 5;
+            if (MousePosDetector.detectMousePos(mouseX, mouseY, x1Back - 3, x2Back, upArrow, downArrow)) {
+                if (event.getClickCount() > 0) {
+                    onBackwardClick();
+                }
+                return true;
+            }
+            return false;
+        }
+        return false;
+
+    }
+
+    private void onBackwardClick() {
+        WebLink link = backwardStack.pop();
+        if (browserPage.currentWeb != null) {
+            forwardStack.push(browserPage.currentWeb);
+        }
+        if (link != null) {
+            browserPage.mainPageState = constants.WORKING;
+            browserPage.currentWeb = link;
+            browserPage.setInputContent(link.getWebLink());
+        } else {
+            browserPage.mainPageState = browserPage.HOME;
+            browserPage.currentWeb = null;
+            browserPage.setInputContent(constants.DEFAULT_INPUT_BROWSER);
+        }
+    }
+
+    public boolean validateArrowFront(MouseEvent event) {
+        if (!forwardStack.isEmpty()) {
+            Point point = event.getPoint();
+            double mouseX = point.getX();
+            double mouseY = point.getY();
+            int x1For = browserPage.getHomeBtnX() + browserPage.getHomeBtnWidth() + 80;
+            int x2For = browserPage.getHomeBtnX() + browserPage.getHomeBtnWidth() + 100;
+            int upArrow = browserPage.getHomeBtnY() + 5;
+            int downArrow = browserPage.getHomeBtnY() + browserPage.getHomeBtnHeight() - 5;
+            if (MousePosDetector.detectMousePos(mouseX, mouseY, x1For + 3, x2For, upArrow, downArrow)) {
+                if (event.getClickCount() > 0) {
+                    onForwardClick();
+                }
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private void onForwardClick() {
+        WebLink link = forwardStack.pop();
+        if (browserPage.currentWeb != null) {
+            backwardStack.push(browserPage.currentWeb);
+        } else {
+            backwardStack.push(null);
+        }
+        if (link != null) {
+            if (link instanceof LinkWithCode) {
+                browserPage.mainPageState = constants.CODE;
+
+            } else if (link instanceof LinkWithLinks) {
+                browserPage.mainPageState = constants.WORKING;
+            } else {
+                browserPage.mainPageState = constants.BROKEN;
+            }
+            browserPage.currentWeb = link;
+            browserPage.setInputContent(link.getWebLink());
+        }
+    }
 }

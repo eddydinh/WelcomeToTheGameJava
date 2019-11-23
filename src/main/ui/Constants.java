@@ -38,6 +38,9 @@ public class Constants {
     public static final String HACK_SCREEN_4 = "Loading K3RN3LC0MP1L3R v1.337...";
     public static final String HACK_SCREEN_5 = "Initializing...";
     public static final String WEB_LINK = "WEB_LINK";
+    public static final String HOME_BTN = "HOME_BTN";
     public static String BROKEN = "BROKEN";
     public static String WORKING = "WORKING";
+    public static String CODE = "CODE";
+    public static String PENALTY_STRING = "A secret key has been destroyed";
 }

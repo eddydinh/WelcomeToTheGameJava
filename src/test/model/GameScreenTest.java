@@ -20,7 +20,7 @@ public class GameScreenTest {
 
     @Test
     void testInit() {
-        assertEquals(0.5, hackScreen.chance);
+        assertEquals(hackScreen.CHANCE, hackScreen.chance);
         assertEquals("", hackScreen.inputCode);
         assertEquals("", hackScreen.askedCode);
     }
@@ -64,6 +64,12 @@ public class GameScreenTest {
         hackScreen.notifyObservers(game.GAME_OVER);
 
         assertEquals(game.GAME_IS_PLAYED, game.getState());
+
+
+
+        hackScreen.notifyObservers(game.GAME_TRULY_OVER);
+
+        assertEquals(game.GAME_TRULY_OVER, game.getState());
 
 
 

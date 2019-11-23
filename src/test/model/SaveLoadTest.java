@@ -50,8 +50,14 @@ public class SaveLoadTest {
             exception.printStackTrace();
 
         }
-
         assertEquals(testLines.size(), theGame.lines.size());
+
+        try{
+            testLines = theGame.readToLines("unknown");
+            fail("expected IOException");
+        }catch (IOException e){
+
+        }
 
     }
 

@@ -8,16 +8,16 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class GetRandomStringAPI {
-    String urlBase;
-    URL url;
-    ConcreteHackingGame game;
+    private String urlBase;
+    private URL url;
+    private ConcreteHackingGame game;
+    private int count;
 
     public GetRandomStringAPI(String urlBase, int count) {
         this.urlBase = urlBase + count;
@@ -72,9 +72,13 @@ public class GetRandomStringAPI {
         for (int i = 0; i < webNamesArray.size(); i++) {
 
             makeWebLink(webNamesArray, i, webLinksArray);
+
         }
 
+        if (count < game.keys.size()) {
+            game.keys = game.keys.subList(0, count);
 
+        }
     }
 
 
@@ -82,13 +86,21 @@ public class GetRandomStringAPI {
         String webName = webNamesArray.get(i);
         double d = Math.random();
         game.webNames.add(webName);
-        WebLink link = null;
-        if (d < 0.5) {
-            link = new BrokenWebLink(webName, "http://" + webLinksArray.get(i) + ".ann");
+        WebLink link;
+        if (d < 0.3) {
+            if (count < 4) {
+                link = new LinkWithCode(webName, "http://" + webLinksArray.get(i) + ".ann");
+                ((LinkWithCode) link).setLinkImg(game.getImage(game.LINK_IMG_PATH + count + ".png"));
+                ((LinkWithCode) link).setKey(game.keys.get(count));
+                count++;
+            } else {
+                link = new BrokenWebLink(webName, "http://" + webLinksArray.get(i) + ".ann");
+            }
         } else {
             link = new LinkWithLinks(webName, "http://" + webLinksArray.get(i) + ".ann");
 
         }
+
         game.getBrowserPage().addWebLink(link);
     }
 

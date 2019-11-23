@@ -8,10 +8,11 @@ public abstract class GameScreen {
     protected double chance;
     public String inputCode;
     public String askedCode;
+    public static final double CHANCE = 0.45;
 
 
     public GameScreen() {
-        chance = 0.5;
+        chance = CHANCE;
         inputCode = "";
         askedCode = "";
     }
@@ -34,11 +35,11 @@ public abstract class GameScreen {
                 observer.update(gameState);
             } else if (gameState == observer.GAME_OVER && observer.state == observer.HACK_SCREEN) {
                 observer.update(gameState);
+            } else if (gameState == observer.GAME_TRULY_OVER) {
+                observer.update(gameState);
             }
 
         }
-
-
 
 
     }

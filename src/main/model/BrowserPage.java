@@ -7,11 +7,46 @@ import java.util.HashMap;
 public class BrowserPage extends Page {
 
 
-
     private HashMap<String, WebLink> webLinks = new HashMap<>();
 
-    public LinkWithLinks currentWeb = null;
+    public WebLink currentWeb = null;
 
+    private int homeBtnX;
+    private int homeBtnY;
+    private int homeBtnWidth;
+    private int homeBtnHeight;
+
+    public int getHomeBtnX() {
+        return homeBtnX;
+    }
+
+    public void setHomeBtnX(int homeBtnX) {
+        this.homeBtnX = homeBtnX;
+    }
+
+    public int getHomeBtnY() {
+        return homeBtnY;
+    }
+
+    public void setHomeBtnY(int homeBtnY) {
+        this.homeBtnY = homeBtnY;
+    }
+
+    public int getHomeBtnWidth() {
+        return homeBtnWidth;
+    }
+
+    public void setHomeBtnWidth(int homeBtnWidth) {
+        this.homeBtnWidth = homeBtnWidth;
+    }
+
+    public int getHomeBtnHeight() {
+        return homeBtnHeight;
+    }
+
+    public void setHomeBtnHeight(int homeBtnHeight) {
+        this.homeBtnHeight = homeBtnHeight;
+    }
 
     public BrowserPage(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
 
@@ -28,6 +63,14 @@ public class BrowserPage extends Page {
         }
     }
 
+    public boolean isMouseOverHomeButton(double mouseX, double mouseY) {
+        return MousePosDetector.detectMousePos(mouseX, mouseY,
+                getHomeBtnX(),
+                getHomeBtnX() + getHomeBtnWidth(),
+                getHomeBtnY(),
+                getHomeBtnY() + getHomeBtnHeight());
+    }
+
     public HashMap<String, WebLink> getWebLinks() {
         return webLinks;
     }
@@ -40,15 +83,20 @@ public class BrowserPage extends Page {
         setNavBarWidth(getMainPageWidth());
         setNavBarHeight(40);
 
-        setInputX(getMainPageX() + 1);
-        setInputY(getMainPageY() + getNavBarHeight() - 30);
-        setInputWidth(getMainPageWidth() - 2);
-        setInputHeight(40);
+        setInputX(getMainPageX() + 200);
+        setInputY(getMainPageY() + getNavBarHeight() - 25);
+        setInputWidth(getMainPageWidth() - 250);
+        setInputHeight(30);
 
         setCloseBtnHeight(30);
         setCloseBtnWidth(30);
         setCloseBtnX(getMainPageX() + getMainPageWidth() - 10 - getCloseBtnWidth());
         setCloseBtnY(getMainPageY() - 27);
+
+        setHomeBtnX(getMainPageX() + 10);
+        setHomeBtnY(getMainPageY() + getNavBarHeight() - 25);
+        setHomeBtnWidth(30);
+        setHomeBtnHeight(30);
 
     }
 }

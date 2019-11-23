@@ -29,7 +29,7 @@ public class HackScreen extends GameScreen {
     private void submit() {
         if (inputCode.equals(askedCode)) {
             inputCode = "";
-            notifyObservers(new ConcreteHackingGame().GAME_IS_PLAYED);
+            notifyObservers(ConcreteHackingGame.getInstance().GAME_IS_PLAYED);
         }
     }
 
