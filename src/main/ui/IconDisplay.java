@@ -20,6 +20,7 @@ public class IconDisplay {
         messageDisplay = new MessageDisplay(theGame);
     }
 
+    //EFFECT: validate mouse on icon
     public boolean validateMouse(MouseEvent event, int index) {
         Point point = event.getPoint();
         double mouseX = point.getX();
@@ -31,10 +32,13 @@ public class IconDisplay {
         return false;
     }
 
+    //EFFECT: return icon from icons given index
     public Icon getIcon(int index) {
         return icons.get(index);
     }
 
+    //MODIFIES: Clickable
+    //EFFECT: handle click event on icon
     public void onMouseClickedIcon(int index) {
         Clickable icon = icons.get(index);
         icon.clickHandler(true);
@@ -47,16 +51,25 @@ public class IconDisplay {
 
     }
 
+    //MODIFIES: Icon, Page
+    //EFFECT: handle click event on page's close btn
+
     public void onMouseClickedPageCloseBtn(int index) {
         icons.get(index).doubleClickHandler(false);
 
     }
 
+    //MODIFIES: Clickable, Page
+    //EFFECT: handle double click event on icon
     public void onMouseDoubleClickedIcon(int idex) {
         icons.get(idex).doubleClickHandler(true);
 
 
     }
+
+
+    //MODIFIES: Graphics
+    //EFFECT: draw icon
 
     public void drawIcon(Graphics gameGraphics) {
         for (Icon i : icons) {

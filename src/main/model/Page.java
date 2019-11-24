@@ -234,6 +234,7 @@ public abstract class Page implements Draggable {
     }
 
 
+    //EFFECT: detect whether mouse is on close btn
     public boolean isMouseOverCloseBtn(double mouseX, double mouseY) {
 
         return mousePosDetector.detectMousePos(mouseX, mouseY,
@@ -245,6 +246,7 @@ public abstract class Page implements Draggable {
 
     }
 
+    //EFFECT: detect whether mouse is on input
     public boolean isMouseOverInput(double mouseX, double mouseY) {
 
         return mousePosDetector.detectMousePos(mouseX, mouseY,
@@ -256,6 +258,8 @@ public abstract class Page implements Draggable {
 
     }
 
+
+    //EFFECT: detect whether mouse is on navbar
     public boolean isMouseOverNavBar(double mouseX, double mouseY) {
 
 
@@ -268,6 +272,8 @@ public abstract class Page implements Draggable {
 
     }
 
+    //MODIFIES: this
+    //EFFECT: allow users to drag pages
     @Override
     public void dragHandler(double iconX, double iconY) {
         setMainPageX((int) iconX);
@@ -280,6 +286,8 @@ public abstract class Page implements Draggable {
         isMouseOverCloseBtn = mouseOverCloseBtn;
     }
 
+    //MODIFIES: this, Icon
+    //EFFECT: pair page with Icon
     public void setIcon(Icon theIcon) {
         if (icon != theIcon) {
             icon = theIcon;

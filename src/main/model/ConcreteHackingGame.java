@@ -27,6 +27,7 @@ public class ConcreteHackingGame extends HackingGame {
     public int randomInd;
     private static ConcreteHackingGame HACKING_GAME;
 
+    //EFFECT: return singleton instance of ConcreteHackingGame
     public static ConcreteHackingGame getInstance() {
         if (HACKING_GAME == null) {
             HACKING_GAME = new ConcreteHackingGame();
@@ -39,6 +40,8 @@ public class ConcreteHackingGame extends HackingGame {
         return hackScreen;
     }
 
+    //MODIFIES: this
+    //EFFECT: update state of game, if hack screen state, generate random prompt and reset timer.
     @Override
     public void update(String gameState) {
 
@@ -54,6 +57,7 @@ public class ConcreteHackingGame extends HackingGame {
     public void setState(String gameState) {
         state = gameState;
     }
+
 
 
     private String password;
@@ -98,6 +102,7 @@ public class ConcreteHackingGame extends HackingGame {
 
     }
 
+    //EFFECTS: read lines in txt files to a List of String
 
     public List<String> readToLines(String filePath) throws IOException {
 
@@ -105,6 +110,7 @@ public class ConcreteHackingGame extends HackingGame {
 
     }
 
+    //EFFECTS: return Java Image from file path
     public Image getImage(String filePath) {
         try {
             File imageFile = new File(filePath);
@@ -159,6 +165,11 @@ public class ConcreteHackingGame extends HackingGame {
 
     }
 
+
+    //Validate key code on win/ lost screen produce desired effects
+    //REQUIRES: keyCode
+    //MODIFIES: this
+    //EFFECTS: let user quite the game
     private void validateKeyGameWinLost(int keyCode) {
         if (keyCode == KeyEvent.VK_Q) {
             if (state == WIN || state == GAME_TRULY_OVER) {
@@ -208,9 +219,11 @@ public class ConcreteHackingGame extends HackingGame {
 
     }
 
+    //MODIFIES: this
+    //EFFECT: save users' notes and verify if user has found a secret key, if yes set state to WIN
 
     private void writeLineAndSaveNoteToFile() {
-        System.out.println(count);
+
         try {
             if (keys.contains(notePadPage.getInputContent())) {
                 count++;
@@ -230,6 +243,8 @@ public class ConcreteHackingGame extends HackingGame {
         }
     }
 
+    //MODIFIES: file from filePath
+    //EFFECT: write array lines to file
     public void writeToFile(String filePath) throws FileNotFoundException {
         File file = new File(filePath);
         PrintWriter writer = new PrintWriter(file);
@@ -241,6 +256,8 @@ public class ConcreteHackingGame extends HackingGame {
 
     }
 
+    //MODIFIES: notepad.txt
+    //EFFECTS: reset note pad to original texts
     public void resetNote() {
         File file = new File(DEFAULT_NOTE_FILE_PATH);
         try (PrintWriter writer = new PrintWriter(file)) {
@@ -266,7 +283,10 @@ public class ConcreteHackingGame extends HackingGame {
         this.password = password;
     }
 
-
+    //Validate key typed on notepad and hackscreen
+    //REQUIRES: keyCode, keyChar
+    //MODIFIES: this
+    //EFFECTS: let user type and save notes, and type and submit code in hack screen
     public void keyTyped(int keyCode, char keyChar) {
 
         switch (state) {
@@ -281,6 +301,12 @@ public class ConcreteHackingGame extends HackingGame {
         }
 
     }
+
+
+    //Validate key code on notepad
+    //REQUIRES: keyCode
+    //MODIFIES: notePadPage, notepad.txt
+    //EFFECTS: let user write and save in notes.
 
     private void validateKeyGameIsPlayed(int keyCode, char keyChar) {
         if (notePadPage.inputHasCursor() && isPlayed()) {

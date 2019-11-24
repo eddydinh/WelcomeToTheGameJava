@@ -11,6 +11,10 @@ public class NotePadPage extends Page {
         setInputContent(constants.DEFAULT_INPUT_NOTEPAD);
     }
 
+
+    //MODIFIES: this
+    //EFFECTS: set up coordination of notepad page elements
+
     @Override
     public void setUpPage() {
         setNavBarX(getMainPageX());

@@ -96,16 +96,25 @@ public abstract class Icon implements Clickable {
 
     }
 
+    //MODIFIES: this
+    //EFFECT: set background icon to blue on click
+
     @Override
     public void clickHandler(boolean isClicked) {
         setClicked(isClicked);
     }
+
+    //MODIFIES: this
+    //EFFECT: open associated page on double click
 
     @Override
     public void doubleClickHandler(boolean isDoubleClicked) {
         setDoubleClicked(isDoubleClicked);
     }
 
+
+
+    //EFFECT:check if mouse is over icon
     public boolean isMouseOver(double mouseX, double mouseY) {
 
         return mousePosDetector.detectMousePos(mouseX,
@@ -117,6 +126,8 @@ public abstract class Icon implements Clickable {
 
     }
 
+    //MODIFIES: this, Page
+    //EFFECT: Pair page and icon
     void setPage(Page thePage) {
         if (page != thePage) {
             page = thePage;

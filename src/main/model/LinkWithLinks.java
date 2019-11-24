@@ -15,6 +15,8 @@ public class LinkWithLinks extends WebLink {
     private List<WebLink> links = new ArrayList<>();
 
 
+    //MODIFY: links
+    //EFFECT: add new link to the list of links under this link
     public void addLinks(WebLink l) {
         if (!links.contains(l)) {
             links.add(l);

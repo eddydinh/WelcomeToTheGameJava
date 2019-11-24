@@ -11,6 +11,9 @@ public class MessageDisplay {
         this.theGame = theGame;
     }
 
+    //MODIFIES: Graphics
+    //EFFECT: draw given messages according to given attributes
+
     public int drawMessage(String message,
                            Graphics gameGraphics,
                            int fontSize,
@@ -26,6 +29,8 @@ public class MessageDisplay {
         return stringWidth;
     }
 
+    //MODIFIES: Graphics
+    //EFFECT: draw given messages according to given attributes, overload from above
     public int drawMessage(String message,
                            Graphics gameGraphics,
                            int fontSize,
@@ -44,6 +49,8 @@ public class MessageDisplay {
         return stringWidth;
     }
 
+    //MODIFIES: Graphics
+    //EFFECT: set font and also get string width given string
     public int getStringWidth(String string, Graphics gameGraphics, int fontSize) {
         gameGraphics.setFont(new Font("Arial", fontSize, fontSize));
         FontMetrics fontMetrics = gameGraphics.getFontMetrics();

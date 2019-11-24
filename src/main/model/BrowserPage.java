@@ -57,12 +57,16 @@ public class BrowserPage extends Page {
     }
 
 
+
+    //MODIFIES: webLinks
+    //EFFECTS: add a link to the list of links on browser page
     public void addWebLink(WebLink link) {
         if (!webLinks.containsValue(link)) {
             webLinks.put(link.getWebName(), link);
         }
     }
 
+    //EFFECTS: check if mouse over home button
     public boolean isMouseOverHomeButton(double mouseX, double mouseY) {
         return MousePosDetector.detectMousePos(mouseX, mouseY,
                 getHomeBtnX(),
@@ -75,7 +79,8 @@ public class BrowserPage extends Page {
         return webLinks;
     }
 
-
+    //MODIFIES: this
+    //EFFECTS: set up coordinations of browser page elements
     @Override
     public void setUpPage() {
         setNavBarX(getMainPageX());

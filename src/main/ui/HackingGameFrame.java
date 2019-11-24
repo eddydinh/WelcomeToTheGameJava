@@ -56,9 +56,9 @@ public class HackingGameFrame extends JFrame {
 
     }
 
-    // Set up timer
+    // Set up timer for repaint
     // MODIFIES: none
-    // EFFECTS: initializes a timer that updates game each
+    // EFFECTS: initializes a timer that updates game
     // INTERVAL milliseconds
     private void addTimer() {
         Timer t = new Timer(INTERVAL, new ActionListener() {
@@ -71,9 +71,9 @@ public class HackingGameFrame extends JFrame {
         t.start();
     }
 
-    // Set up timer
-    // MODIFIES: none
-    // EFFECTS: initializes a timer that updates game each
+    // Set up timer for desktop
+    // MODIFIES: GameTimer
+    // EFFECTS: increase desktop time
     // INTERVAL milliseconds
     private void addTimerDesktop() {
         Timer t = new Timer(INTERVAL_DESKTOP, new ActionListener() {
@@ -104,9 +104,9 @@ public class HackingGameFrame extends JFrame {
     }
 
 
-    //Set up timer for flash
-    //MODIFIES: UiPanel.flash
-    //EFFECTS: invert UiPanel's flash boolean variable, make cursor flash
+    //Set up timer to initialize hackscreen
+    //MODIFIES: ConcreteHackingGame
+    //EFFECTS: initialize hacking game during play time
     //INTERVAL milliseconds
     private void addTimerInitializeHackScreen() {
         Timer t = new Timer(INTERVAL_INITIALIZE, new ActionListener() {
@@ -121,9 +121,9 @@ public class HackingGameFrame extends JFrame {
     }
 
 
-    //Set up timer for flash
-    //MODIFIES: UiPanel.flash
-    //EFFECTS: invert UiPanel's flash boolean variable, make cursor flash
+    //Set up timer for hack screen
+    //MODIFIES: GameTimer
+    //EFFECTS: timer for hack screen is counting down
     //INTERVAL milliseconds
     private void addTimerDuringHackScreen() {
         Timer t = new Timer(INTERVAL_DURING, new ActionListener() {

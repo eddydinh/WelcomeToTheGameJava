@@ -67,6 +67,7 @@ public class WebLink {
         this.webLink = webLink;
     }
 
+    //EFFECT: link is now compared by their names and link
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -80,6 +81,7 @@ public class WebLink {
                 && getWebLink().equals(webLink1.getWebLink());
     }
 
+    //EFFECT: check whether mouse is over link
     public boolean isMouseOverLink(double mouseX, double mouseY) {
 
 
@@ -92,11 +94,13 @@ public class WebLink {
 
     }
 
+    //EFFECT: change hash of link
     @Override
     public int hashCode() {
         return Objects.hash(getWebName(), getWebLink());
     }
 
+    //EFFECT: turn link to string of link
     @Override
     public String toString() {
         return getWebLink();

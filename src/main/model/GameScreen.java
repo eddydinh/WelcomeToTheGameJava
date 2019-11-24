@@ -18,12 +18,16 @@ public abstract class GameScreen {
     }
 
 
+    //MODIFIES: this
+    //EFFECT: add observer to list of observers
     public void addObserver(HackingGame observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);
         }
     }
 
+    //MODIFIES: observer
+    //EFFECT: call update method in observer
     public void notifyObservers(String gameState) {
         for (HackingGame observer : observers) {
             double d = Math.random();

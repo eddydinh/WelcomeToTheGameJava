@@ -38,6 +38,7 @@ public class PageDisplay {
     }
 
 
+    //EFFECT: validate mouse in page
     public boolean validateMouse(MouseEvent event, String type, int index) {
         Point point = event.getPoint();
         double mouseX = point.getX();
@@ -120,6 +121,8 @@ public class PageDisplay {
         return pages.get(index);
     }
 
+    //MODIFIES: Page
+    //EFFECT: display flash cursor when users click on input
     public void onMouseClickedPageInput(int index) {
 
         Page page = pages.get(index);
@@ -152,6 +155,8 @@ public class PageDisplay {
         }
     }
 
+    //MODIFIES: Page
+    //EFFECT: drag pages
     public void validateMouseDraggedPage(MouseEvent event, int index) {
         Page page = pages.get(index);
         if (page.isPressed()) {
@@ -164,6 +169,9 @@ public class PageDisplay {
 
 
     }
+
+    //MODIFIES: Graphics
+    //EFFECT: draw pages on screen
 
     public void drawPage(Graphics gameGraphics, int index) {
         Page page = pages.get(index);
@@ -495,6 +503,8 @@ public class PageDisplay {
         gameGraphics.setColor(savedColor);
     }
 
+    //MODIFIES: this
+    //EFFECT: handle clicking on arrow back
 
     public boolean validateArrowBack(MouseEvent event) {
         if (!backwardStack.isEmpty()) {
@@ -517,6 +527,7 @@ public class PageDisplay {
 
     }
 
+
     private void onBackwardClick() {
         WebLink link = backwardStack.pop();
         if (browserPage.currentWeb != null) {
@@ -533,6 +544,8 @@ public class PageDisplay {
         }
     }
 
+    //MODIFIES: this
+    //EFFECT: handle clicking on arrow forward
     public boolean validateArrowFront(MouseEvent event) {
         if (!forwardStack.isEmpty()) {
             Point point = event.getPoint();

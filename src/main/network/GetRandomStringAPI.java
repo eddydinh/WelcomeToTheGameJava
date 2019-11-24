@@ -34,6 +34,8 @@ public class GetRandomStringAPI {
         generateWebLinks();
     }
 
+    //MODIFIES: this
+    //EFFECT: create a string of random website links
     public List<String> getRandomStringArray() {
 
 
@@ -56,6 +58,9 @@ public class GetRandomStringAPI {
         }
     }
 
+
+    //MODIFIES:this, ConcreteHackingGame
+    //EFFECT: generate random links for browser page
 
     private void generateWebLinks() {
 
@@ -81,6 +86,9 @@ public class GetRandomStringAPI {
         }
     }
 
+
+    //MODIFIES:this, ConcreteHackingGame, BrowserPage
+    //EFFECT: make a random web link
 
     private void makeWebLink(List<String> webNamesArray, int i, List<String> webLinksArray) {
         String webName = webNamesArray.get(i);

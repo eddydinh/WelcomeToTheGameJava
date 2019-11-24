@@ -10,6 +10,9 @@ public class HackScreen extends GameScreen {
 
     }
 
+    //MODIFIES: this
+    //EFFECT: let user type in codes and submit
+
     public void validateKey(int keyCode, char keyChar) {
         if (keyCode != KeyEvent.VK_ENTER && keyCode != KeyEvent.VK_BACK_SPACE) {
 
@@ -25,6 +28,9 @@ public class HackScreen extends GameScreen {
             }
         }
     }
+
+    //MODIFIES: this, ConcreteHackingGame
+    //EFFECT: submit users' codes if correct take them back to main game screen
 
     private void submit() {
         if (inputCode.equals(askedCode)) {

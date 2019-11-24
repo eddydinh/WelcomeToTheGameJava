@@ -18,6 +18,9 @@ public class GameTimer {
 
     }
 
+    //MODIFIES: this
+    //EFFECT: increase day by one check if day is more than max day, if yes, update game state to LOST
+
     public static void updateDay() {
         ConcreteHackingGame hackingGame = ConcreteHackingGame.getInstance();
         day++;
@@ -26,6 +29,8 @@ public class GameTimer {
         }
     }
 
+    //MODIFIES: this
+    //EFFECT: increase desktop time by 1, if more than 23, increase day by 1, return desktop time to 0
     public static void updateTime() {
 
         desktopTimer += 1;
@@ -36,6 +41,10 @@ public class GameTimer {
 
 
     }
+
+
+    //MODIFIES: this
+    //EFFECT: decrease hack screen time by 2, if under 0, switch game state to get hacked, increase day by one
 
     public static void updateHackScreenTimer() {
         ConcreteHackingGame hackingGame = ConcreteHackingGame.getInstance();
