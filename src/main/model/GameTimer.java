@@ -11,6 +11,7 @@ public class GameTimer {
     public static final int MAX_DAY = 5;
 
 
+
     public GameTimer() {
         hackScreenTimer = UiPanel.CODE_BOX_WIDTH;
         desktopTimer = 0;
@@ -59,5 +60,7 @@ public class GameTimer {
         }
 
     }
+
+
 
 }

@@ -42,5 +42,5 @@ public class Constants {
     public static String BROKEN = "BROKEN";
     public static String WORKING = "WORKING";
     public static String CODE = "CODE";
-    public static String PENALTY_STRING = "A secret key has been destroyed";
+    public static String PENALTY_STRING = "1 day has passed";
 }

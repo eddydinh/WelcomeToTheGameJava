@@ -8,45 +8,12 @@ public class BrowserPage extends Page {
 
 
     private HashMap<String, WebLink> webLinks = new HashMap<>();
-
-    public WebLink currentWeb = null;
-
+    private WebLink currentWeb = null;
     private int homeBtnX;
     private int homeBtnY;
     private int homeBtnWidth;
     private int homeBtnHeight;
 
-    public int getHomeBtnX() {
-        return homeBtnX;
-    }
-
-    public void setHomeBtnX(int homeBtnX) {
-        this.homeBtnX = homeBtnX;
-    }
-
-    public int getHomeBtnY() {
-        return homeBtnY;
-    }
-
-    public void setHomeBtnY(int homeBtnY) {
-        this.homeBtnY = homeBtnY;
-    }
-
-    public int getHomeBtnWidth() {
-        return homeBtnWidth;
-    }
-
-    public void setHomeBtnWidth(int homeBtnWidth) {
-        this.homeBtnWidth = homeBtnWidth;
-    }
-
-    public int getHomeBtnHeight() {
-        return homeBtnHeight;
-    }
-
-    public void setHomeBtnHeight(int homeBtnHeight) {
-        this.homeBtnHeight = homeBtnHeight;
-    }
 
     public BrowserPage(int mainX, int mainY, int mainWidth, int mainHeight, String pageName) {
 
@@ -55,7 +22,6 @@ public class BrowserPage extends Page {
         setInputContent(constants.DEFAULT_INPUT_BROWSER);
 
     }
-
 
 
     //MODIFIES: webLinks
@@ -104,4 +70,46 @@ public class BrowserPage extends Page {
         setHomeBtnHeight(30);
 
     }
+
+    public WebLink getCurrentWeb() {
+        return currentWeb;
+    }
+
+    public void setCurrentWeb(WebLink currentWeb) {
+        this.currentWeb = currentWeb;
+    }
+
+
+    public int getHomeBtnX() {
+        return homeBtnX;
+    }
+
+    public void setHomeBtnX(int homeBtnX) {
+        this.homeBtnX = homeBtnX;
+    }
+
+    public int getHomeBtnY() {
+        return homeBtnY;
+    }
+
+    public void setHomeBtnY(int homeBtnY) {
+        this.homeBtnY = homeBtnY;
+    }
+
+    public int getHomeBtnWidth() {
+        return homeBtnWidth;
+    }
+
+    public void setHomeBtnWidth(int homeBtnWidth) {
+        this.homeBtnWidth = homeBtnWidth;
+    }
+
+    public int getHomeBtnHeight() {
+        return homeBtnHeight;
+    }
+
+    public void setHomeBtnHeight(int homeBtnHeight) {
+        this.homeBtnHeight = homeBtnHeight;
+    }
+
 }

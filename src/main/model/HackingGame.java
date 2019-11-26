@@ -25,11 +25,12 @@ public abstract class HackingGame {
     protected static final String DEFAULT_BROWSER_IMAGE_PATH = "./data/img/browserIcon.png";
     public static final String RAND_STRING_URL_BASE = "https://www.passwordrandom.com/query?command=guid&format=plain&count=";
 
-    public List<String> lines;
+    protected List<String> lines;
 
-    public String getState() {
-        return state;
+    public List<String> getLines() {
+        return lines;
     }
+
 
     protected String state;
 
@@ -60,6 +61,11 @@ public abstract class HackingGame {
     protected BrowserPage browserPage;
 
     public abstract void update(String gameState);
+
+    public String getState() {
+        return state;
+    }
+
 
 
 }

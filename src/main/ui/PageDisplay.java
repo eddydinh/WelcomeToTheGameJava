@@ -63,9 +63,9 @@ public class PageDisplay {
         if (browserPage.isMouseOverHomeButton(mouseX, mouseY)) {
             browserPage.setMouseOverCloseBtn(true);
             if (event.getClickCount() > 0) {
-                browserPage.mainPageState = browserPage.HOME;
+                browserPage.setMainPageState(browserPage.HOME);
                 browserPage.setInputContent(constants.DEFAULT_INPUT_BROWSER);
-                browserPage.currentWeb = null;
+                browserPage.setCurrentWeb(null);
                 forwardStack.clear();
                 backwardStack.clear();
             }
@@ -76,7 +76,7 @@ public class PageDisplay {
     }
 
     private boolean mouseIsOverLink(MouseEvent e, double mouseX, double mouseY) {
-        if (browserPage.mainPageState == constants.WORKING || browserPage.mainPageState == browserPage.HOME) {
+        if (browserPage.getMainPageState() == constants.WORKING || browserPage.getMainPageState() == browserPage.HOME) {
             for (WebLink link : this.webLinks) {
                 link.hasLine = false;
                 if (link.isMouseOverLink(mouseX, mouseY)) {
@@ -95,23 +95,24 @@ public class PageDisplay {
     }
 
     private void onClick(WebLink link) {
-        stackOperationOnLinkClick(link);
+        stackOperationOnLinkClick();
+        browserPage.setCurrentWeb(link);
         if (link instanceof BrokenWebLink) {
-            browserPage.mainPageState = constants.BROKEN;
-            browserPage.currentWeb = link;
+            browserPage.setMainPageState(constants.BROKEN);
+
         } else if (link instanceof LinkWithCode) {
-            browserPage.mainPageState = constants.CODE;
-            browserPage.currentWeb = link;
+            browserPage.setMainPageState(constants.CODE);
+
         } else {
-            browserPage.mainPageState = constants.WORKING;
-            browserPage.currentWeb = link;
+            browserPage.setMainPageState(constants.WORKING);
+
         }
     }
 
-    private void stackOperationOnLinkClick(WebLink link) {
+    private void stackOperationOnLinkClick() {
         forwardStack.clear();
-        if (browserPage.currentWeb != null) {
-            backwardStack.push(browserPage.currentWeb);
+        if (browserPage.getCurrentWeb() != null) {
+            backwardStack.push(browserPage.getCurrentWeb());
         } else {
             backwardStack.push(null);
         }
@@ -188,17 +189,17 @@ public class PageDisplay {
 
     private void drawBrowserMainPage(Graphics gameGraphics, Page page) {
 
-        if (page.mainPageState == page.HOME) {
+        if (page.getMainPageState() == page.HOME) {
             drawHomePage(gameGraphics);
-        } else if (page.mainPageState == constants.BROKEN) {
+        } else if (page.getMainPageState() == constants.BROKEN) {
             drawBrokenPage(gameGraphics);
-        } else if (page.mainPageState == constants.WORKING) {
-            if (((LinkWithLinks) browserPage.currentWeb).getLinks().size() < 25) {
-                populateLink(theGame.getBrowserPage().currentWeb);
+        } else if (page.getMainPageState() == constants.WORKING) {
+            if (((LinkWithLinks) browserPage.getCurrentWeb()).getLinks().size() < 25) {
+                populateLink(theGame.getBrowserPage().getCurrentWeb());
             }
-            drawWorkingPage(gameGraphics, browserPage.currentWeb);
+            drawWorkingPage(gameGraphics, browserPage.getCurrentWeb());
         } else {
-            drawPageWithCode(gameGraphics, browserPage.currentWeb);
+            drawPageWithCode(gameGraphics, browserPage.getCurrentWeb());
         }
 
 
@@ -415,7 +416,7 @@ public class PageDisplay {
     private void drawWebLinks(Graphics gameGraphics) {
         BrowserPage browserPage = (BrowserPage) pages.get(1);
         HashMap<String, WebLink> webLinks = browserPage.getWebLinks();
-        List<String> webNames = theGame.webNames;
+        List<String> webNames = theGame.getWebNames();
         int x = browserPage.getMainPageX() + 20;
         int y = browserPage.getMainPageY() + 120;
         int linkMarginBottom = 25;
@@ -456,7 +457,7 @@ public class PageDisplay {
 
     private void drawNotes(Graphics gameGraphics) {
         NotePadPage notePadPage = (NotePadPage) pages.get(0);
-        List<String> lines = theGame.lines;
+        List<String> lines = theGame.getLines();
         int offsetY = 25;
         int lineHeight = 15;
         for (String line : lines) {
@@ -530,16 +531,16 @@ public class PageDisplay {
 
     private void onBackwardClick() {
         WebLink link = backwardStack.pop();
-        if (browserPage.currentWeb != null) {
-            forwardStack.push(browserPage.currentWeb);
+        if (browserPage.getCurrentWeb() != null) {
+            forwardStack.push(browserPage.getCurrentWeb());
         }
         if (link != null) {
-            browserPage.mainPageState = constants.WORKING;
-            browserPage.currentWeb = link;
+            browserPage.setMainPageState(constants.WORKING);
+            browserPage.setCurrentWeb(link);
             browserPage.setInputContent(link.getWebLink());
         } else {
-            browserPage.mainPageState = browserPage.HOME;
-            browserPage.currentWeb = null;
+            browserPage.setMainPageState(browserPage.HOME);
+            browserPage.setCurrentWeb(null);
             browserPage.setInputContent(constants.DEFAULT_INPUT_BROWSER);
         }
     }
@@ -568,21 +569,21 @@ public class PageDisplay {
 
     private void onForwardClick() {
         WebLink link = forwardStack.pop();
-        if (browserPage.currentWeb != null) {
-            backwardStack.push(browserPage.currentWeb);
+        if (browserPage.getCurrentWeb() != null) {
+            backwardStack.push(browserPage.getCurrentWeb());
         } else {
             backwardStack.push(null);
         }
         if (link != null) {
             if (link instanceof LinkWithCode) {
-                browserPage.mainPageState = constants.CODE;
+                browserPage.setMainPageState(constants.CODE);
 
             } else if (link instanceof LinkWithLinks) {
-                browserPage.mainPageState = constants.WORKING;
+                browserPage.setMainPageState(constants.WORKING);
             } else {
-                browserPage.mainPageState = constants.BROKEN;
+                browserPage.setMainPageState(constants.BROKEN);
             }
-            browserPage.currentWeb = link;
+            browserPage.setCurrentWeb(link);
             browserPage.setInputContent(link.getWebLink());
         }
     }

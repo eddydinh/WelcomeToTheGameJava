@@ -33,32 +33,11 @@ public abstract class Page implements Draggable {
 
     //Content of input
     private String inputContent;
-
-    public String mainPageState;
+    private String mainPageState;
     public static String HOME = "HOME";
-
     private boolean isMouseOverCloseBtn = false;
-
-    public String getPageName() {
-        return pageName;
-    }
-
-    public void setPageName(String pageName) {
-        this.pageName = pageName;
-    }
-
     private String pageName;
-
-    public Color getInputTextColor() {
-        return inputTextColor;
-    }
-
-    public void setInputTextColor(Color inputTextColor) {
-        this.inputTextColor = inputTextColor;
-    }
-
     private Color inputTextColor;
-
     private boolean inputHasCursor = false;
     private boolean isPressed = false;
 
@@ -298,4 +277,30 @@ public abstract class Page implements Draggable {
     public boolean getIsMouseOverHomeButton() {
         return isMouseOverCloseBtn;
     }
+
+    public String getMainPageState() {
+        return mainPageState;
+    }
+
+    public void setMainPageState(String mainPageState) {
+        this.mainPageState = mainPageState;
+    }
+
+
+    public String getPageName() {
+        return pageName;
+    }
+
+    public void setPageName(String pageName) {
+        this.pageName = pageName;
+    }
+
+    public Color getInputTextColor() {
+        return inputTextColor;
+    }
+
+    public void setInputTextColor(Color inputTextColor) {
+        this.inputTextColor = inputTextColor;
+    }
+
 }

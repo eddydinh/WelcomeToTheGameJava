@@ -24,47 +24,15 @@ import ui.UiPanel;
 public class ConcreteHackingGame extends HackingGame {
 
     private HackScreen hackScreen;
-    public int randomInd;
+    private int randomInd;
     private static ConcreteHackingGame HACKING_GAME;
-
-    //EFFECT: return singleton instance of ConcreteHackingGame
-    public static ConcreteHackingGame getInstance() {
-        if (HACKING_GAME == null) {
-            HACKING_GAME = new ConcreteHackingGame();
-        }
-        return HACKING_GAME;
-    }
-
-
-    public HackScreen getHackScreen() {
-        return hackScreen;
-    }
-
-    //MODIFIES: this
-    //EFFECT: update state of game, if hack screen state, generate random prompt and reset timer.
-    @Override
-    public void update(String gameState) {
-
-        if (gameState == HACK_SCREEN) {
-            Random random = new Random();
-            randomInd = random.nextInt(codes.size() - 1);
-            hackScreen.askedCode = codes.get(randomInd);
-            GameTimer.hackScreenTimer = UiPanel.CODE_BOX_WIDTH;
-        }
-        setState(gameState);
-    }
-
-    public void setState(String gameState) {
-        state = gameState;
-    }
-
-
-
     private String password;
-    public List<String> webNames = new ArrayList<>();
-    public List<String> codes = new ArrayList<>();
+    private List<String> webNames = new ArrayList<>();
+    private List<String> codes = new ArrayList<>();
     private int initialKeysLength;
-    public int count;
+
+
+    private int count;
 
     public ConcreteHackingGame() {
 
@@ -100,6 +68,30 @@ public class ConcreteHackingGame extends HackingGame {
         }
 
 
+    }
+
+
+    //MODIFIES: this
+    //EFFECT: update state of game, if hack screen state, generate random prompt and reset timer.
+    @Override
+    public void update(String gameState) {
+
+        if (gameState == HACK_SCREEN) {
+            Random random = new Random();
+            randomInd = random.nextInt(codes.size() - 1);
+            hackScreen.askedCode = codes.get(randomInd);
+            GameTimer.hackScreenTimer = UiPanel.CODE_BOX_WIDTH;
+        }
+        setState(gameState);
+    }
+
+
+    //EFFECT: return singleton instance of ConcreteHackingGame
+    public static ConcreteHackingGame getInstance() {
+        if (HACKING_GAME == null) {
+            HACKING_GAME = new ConcreteHackingGame();
+        }
+        return HACKING_GAME;
     }
 
     //EFFECTS: read lines in txt files to a List of String
@@ -208,7 +200,7 @@ public class ConcreteHackingGame extends HackingGame {
         Constants constants = new Constants();
         if (keyCode == KeyEvent.VK_R) {
             setPassword(DEFAULT_PASSWORD);
-            browserPage.mainPageState = browserPage.HOME;
+            browserPage.setMainPageState(browserPage.HOME);
             notePadPage.setInputContent(constants.DEFAULT_INPUT_NOTEPAD);
             notePadPage.setInputTextColor(new Color(173, 173, 173));
             notePadPage.setInputHasCursor(false);
@@ -328,5 +320,22 @@ public class ConcreteHackingGame extends HackingGame {
             }
         }
     }
+
+    public List<String> getWebNames() {
+        return webNames;
+    }
+
+
+
+    public HackScreen getHackScreen() {
+        return hackScreen;
+    }
+
+
+    public void setState(String gameState) {
+        state = gameState;
+    }
+
+
 }
 

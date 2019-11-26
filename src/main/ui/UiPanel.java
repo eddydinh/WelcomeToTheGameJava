@@ -258,7 +258,7 @@ public class UiPanel extends JPanel {
         gameGraphics.drawRect((theGame.WIDTH / 2) - 300, centerY + 50, CODE_BOX_WIDTH, 50);
         drawRect(gameGraphics, new Color(42, 42, 43), (theGame.WIDTH / 2) - 298, centerY + 52, 50, 48);
         drawMessage("1", gameGraphics, 30, (theGame.WIDTH / 2) - 280, centerY + 85, Color.WHITE);
-        drawMessage(theGame.getHackScreen().askedCode, gameGraphics, 15,
+        drawMessage(theGame.getHackScreen().getAskedCode(), gameGraphics, 15,
                 (theGame.WIDTH / 2) - 240, centerY + 77, messageTextColor);
         drawRect(gameGraphics, messageTextColor, (theGame.WIDTH / 2) - 300, centerY + 130, 30, 30);
         drawMessage(">_", gameGraphics, 20, (theGame.WIDTH / 2) - 298, centerY + 150, Color.WHITE);
@@ -267,7 +267,7 @@ public class UiPanel extends JPanel {
     }
 
     private void drawInputCode(Graphics gameGraphics) {
-        int contentWidth = drawMessage(theGame.getHackScreen().inputCode,
+        int contentWidth = drawMessage(theGame.getHackScreen().getInputCode(),
                 gameGraphics, 20, (theGame.WIDTH / 2) - 250,
                 centerY + 150,
                 Color.WHITE);

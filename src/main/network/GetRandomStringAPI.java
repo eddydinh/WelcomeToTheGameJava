@@ -93,10 +93,10 @@ public class GetRandomStringAPI {
     private void makeWebLink(List<String> webNamesArray, int i, List<String> webLinksArray) {
         String webName = webNamesArray.get(i);
         double d = Math.random();
-        game.webNames.add(webName);
+        game.getWebNames().add(webName);
         WebLink link;
         if (d < 0.3) {
-            if (count < 4) {
+            if (count < 5) {
                 link = new LinkWithCode(webName, "http://" + webLinksArray.get(i) + ".ann");
                 ((LinkWithCode) link).setLinkImg(game.getImage(game.LINK_IMG_PATH + count + ".png"));
                 ((LinkWithCode) link).setKey(game.keys.get(count));

@@ -6,8 +6,8 @@ import java.util.List;
 public abstract class GameScreen {
     private List<HackingGame> observers = new ArrayList<>();
     protected double chance;
-    public String inputCode;
-    public String askedCode;
+    protected String inputCode;
+    protected String askedCode;
     public static final double CHANCE = 0.45;
 
 
@@ -47,4 +47,15 @@ public abstract class GameScreen {
 
 
     }
+
+
+    public String getInputCode() {
+        return inputCode;
+    }
+
+
+    public String getAskedCode() {
+        return askedCode;
+    }
+
 }

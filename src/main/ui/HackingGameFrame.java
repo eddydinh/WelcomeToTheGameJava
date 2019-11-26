@@ -17,7 +17,7 @@ public class HackingGameFrame extends JFrame {
     private static final int INTERVAL = 20;
     private static final int INTERVAL_FLASH = 500;
     private static final int INTERVAL_INITIALIZE = 20000;
-    private static final int INTERVAL_DURING = 100;
+    private static final int INTERVAL_DURING = 25;
     private static final int INTERVAL_DESKTOP = 5000;
     private UiPanel uiPanel;
     private ConcreteHackingGame theGame;
